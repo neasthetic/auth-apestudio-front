@@ -9,7 +9,7 @@ import { scriptService } from "@/services/scriptService";
 import { License } from "@/types/license";
 import { Script } from "@/types/script";
 import Image from "next/image";
-import { Info, Pencil, Trash2 } from "lucide-react";
+import { Info, Pencil, Trash2, List, Users, Activity } from "lucide-react";
 
 interface NewLicenseForm {
   scriptId: string;
@@ -251,7 +251,12 @@ export default function LicensesPage() {
           {showCreateModal && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
               <div className="card w-full max-w-md p-6">
-                <h2 className="mb-4 text-lg font-semibold">Criar Licença</h2>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-10 w-10 rounded-full border border-amber-700/40 bg-amber-500/10 text-amber-300 flex items-center justify-center">
+                    <List size={18} />
+                  </div>
+                  <h2 className="text-lg font-semibold">Criar Licença</h2>
+                </div>
                 <form onSubmit={handleCreate} className="space-y-4">
                   <div>
                     <label className="mb-1 block text-sm text-[var(--muted)]">Script *</label>
@@ -330,7 +335,12 @@ export default function LicensesPage() {
           {showDetailLicense && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
               <div className="card w-full p-6" style={{ maxWidth: Math.min(Math.max((showDetailLicense.token.length * 8), 380), 640) }}>
-                <h2 className="mb-4 text-lg font-semibold">Detalhes da Licença</h2>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-10 w-10 rounded-full border border-cyan-700/40 bg-cyan-500/10 text-cyan-300 flex items-center justify-center">
+                    <Activity size={18} />
+                  </div>
+                  <h2 className="text-lg font-semibold">Detalhes da Licença</h2>
+                </div>
                 <div className="space-y-2 text-sm">
                   <div className="break-all font-mono"><span className="text-[var(--muted)]">Token:</span> {showDetailLicense.token}</div>
                   <div><span className="text-[var(--muted)]">Criada em:</span> {new Date(showDetailLicense.createdAt).toLocaleString()}</div>
@@ -347,7 +357,12 @@ export default function LicensesPage() {
           {editLicense && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
               <div className="card w-full max-w-md p-6">
-                <h2 className="mb-4 text-lg font-semibold">Editar Licença</h2>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-10 w-10 rounded-full border border-emerald-700/40 bg-emerald-500/10 text-emerald-300 flex items-center justify-center">
+                    <Pencil size={18} />
+                  </div>
+                  <h2 className="text-lg font-semibold">Editar Licença</h2>
+                </div>
                 <form onSubmit={handleEdit} className="space-y-4 text-sm">
                   <div>
                     <label className="mb-1 block text-sm text-[var(--muted)]">IP</label>
