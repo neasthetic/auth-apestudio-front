@@ -102,7 +102,7 @@ export default function ScriptsPage() {
                       className="btn btn-accent"
                       onClick={() => setShowCreateScriptModal(true)}
                     >
-                      Novo Script
+                      + Novo Script
                     </button>
                   </div>
 
