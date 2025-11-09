@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { User } from "@/types/user";
+import { Home, FileText, KeyRound, LogOut } from "lucide-react";
 
 type Props = {
   user: User;
@@ -43,14 +44,14 @@ export default function DashboardSidebar({ user, onLogout }: Props) {
 
       {/* Nav */}
       <nav className="mt-8 grid gap-1 px-1">
-        <NavItem href="/" label="Painel" icon={<span>🏠</span>} />
-        <NavItem href="#scripts" label="Scripts" icon={<span>📁</span>} />
-        <NavItem href="#licenses" label="Licenças" icon={<span>🪪</span>} />
+        <NavItem href="/" label="Painel" icon={<Home size={18} />} />
+        <NavItem href="/scripts" label="Scripts" icon={<FileText size={18} />} />
+        <NavItem href="#licenses" label="Licenças" icon={<KeyRound size={18} />} />
       </nav>
 
       <div className="mt-auto px-1">
         <button onClick={onLogout} className="btn w-full border-red-900/40 bg-[#151317] text-slate-300 hover:border-red-800/60">
-          <span>⎋</span>
+          <LogOut size={16} />
           <span>Sair</span>
         </button>
       </div>
