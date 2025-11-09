@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+/* Design tokens - dark minimalist theme */
+:root {
+  /* base surfaces */
+  --background: #0b0b0f;
+  --surface: #111114;
+  --card: #121216;
+  --border: #27272a;
+
+  /* text */
+  --foreground: #e5e7eb;
+  --muted: #9ca3af;
+
+  /* brand */
+  --accent: #ff0042; /* requested highlight color */
+  --accent-foreground: #ffffff;
+}
+
+/* Tailwind custom theme variables (if needed configure in tailwind.config). Using CSS vars directly here. */
+
+/* Global base */
+html, body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+body {
+  font-family: var(--font-sora), ui-sans-serif, system-ui, -apple-system,
+    Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji",
+    "Segoe UI Emoji";
+}
+
+/* Primitives */
+.container-page {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: 80rem; /* ~7xl */
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.card {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+}
+
+.card-hover {
+  transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+  box-shadow: 0 8px 28px rgb(0 0 0 / 25%);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .6rem 1rem;
+  border-radius: .65rem;
+  font-weight: 600;
+  line-height: 1;
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+  color: var(--foreground);
+  transition: background-color 150ms ease, border-color 150ms ease, opacity 150ms ease;
+}
+
+.btn:hover { border-color: #3f3f46; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.btn-accent {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 92%, #ffffff 8%), var(--accent));
+  border-color: color-mix(in srgb, var(--accent) 70%, #000 30%);
+  color: var(--accent-foreground);
+}
+
+.btn-accent:hover {
+  filter: brightness(1.05);
+}
+
+.tag {
+  display: inline-flex; align-items: center; gap: .4rem;
+  padding: .25rem .5rem; border-radius: .5rem;
+  background-color: #18181b; border: 1px solid var(--border);
+  color: var(--muted); font-weight: 500; font-size: .75rem;
+}
+
+/* Sidebar helpers */
+.sidebar {
+  width: 15rem; /* 240px */
+  background-color: #0e0e12;
+  border-right: 1px solid var(--border);
+}
+
+.sidebar a { color: #cbd5e1; }
+.sidebar a.active, .sidebar a:hover { color: var(--accent); }
+
