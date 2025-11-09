@@ -35,21 +35,20 @@ export default function DashboardSidebar({ user, onLogout }: Props) {
 
   return (
     <aside className="sidebar hidden min-h-screen shrink-0 md:flex md:flex-col md:px-4">
-      {/* Centered stack */}
-      <div className="flex flex-col items-center justify-center flex-1 w-full">
-        {/* Logo */}
-        <div className="mb-10">
-          <div className="relative w-40 h-12">
-            <Image
-              src="https://i.ibb.co/WR4k0HQ/complete-logo.png"
-              alt="Logo"
-              fill
-              className="object-contain"
-              priority
-            />
-          </div>
+      {/* Logo fixed at top */}
+      <div className="pt-6 pb-6">
+        <div className="relative w-40 h-12">
+          <Image
+            src="https://i.ibb.co/WR4k0HQ/complete-logo.png"
+            alt="Logo"
+            fill
+            className="object-contain"
+            priority
+          />
         </div>
-        {/* Nav vertically centered */}
+      </div>
+      {/* Nav below logo */}
+      <div className="flex-1">
         <nav className="grid gap-2 w-full">
           <NavItem href="/" label="Painel" icon={<Home size={22} />} />
           <NavItem href="/scripts" label="Scripts" icon={<FileText size={22} />} />
@@ -58,7 +57,7 @@ export default function DashboardSidebar({ user, onLogout }: Props) {
           <NavItem href="/autenticacao" label="Autenticação" icon={<UploadCloud size={22} />} />
         </nav>
       </div>
-      {/* Logout */}
+      {/* Logout at bottom */}
       <div className="pb-6">
         <button
           onClick={onLogout}

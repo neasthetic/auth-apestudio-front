@@ -303,13 +303,18 @@ export default function LicensesPage() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm text-[var(--muted)]">
-                      <input
-                        type="checkbox"
-                        checked={createForm.isPermanent}
-                        onChange={(e) => setCreateForm({ ...createForm, isPermanent: e.target.checked })}
-                      />
-                      Permanente
+                    <label className="group flex items-center gap-3 text-sm text-[var(--muted)] cursor-pointer select-none">
+                      <span className="relative inline-flex items-center justify-center">
+                        <input
+                          type="checkbox"
+                          checked={createForm.isPermanent}
+                          onChange={(e) => setCreateForm({ ...createForm, isPermanent: e.target.checked })}
+                          className="peer h-5 w-5 rounded-md border border-[var(--border)] bg-[var(--surface)] appearance-none cursor-pointer transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:ring-offset-0 checked:bg-[var(--accent)] checked:border-[var(--accent)]"
+                          aria-label="Marcar licença como permanente"
+                        />
+                        <span className="pointer-events-none absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white opacity-0 peer-checked:opacity-100">✓</span>
+                      </span>
+                      <span className="text-white font-medium group-hover:text-white transition-colors">Permanente</span>
                     </label>
                     {!createForm.isPermanent && (
                       <input
@@ -383,13 +388,18 @@ export default function LicensesPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm text-[var(--muted)]">
-                      <input
-                        type="checkbox"
-                        checked={editForm.isPermanent}
-                        onChange={(e) => setEditForm({ ...editForm, isPermanent: e.target.checked })}
-                      />
-                      Permanente
+                    <label className="group flex items-center gap-3 text-sm text-[var(--muted)] cursor-pointer select-none">
+                      <span className="relative inline-flex items-center justify-center">
+                        <input
+                          type="checkbox"
+                          checked={editForm.isPermanent}
+                          onChange={(e) => setEditForm({ ...editForm, isPermanent: e.target.checked })}
+                          className="peer h-5 w-5 rounded-md border border-[var(--border)] bg-[var(--surface)] appearance-none cursor-pointer transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:ring-offset-0 checked:bg-[var(--accent)] checked:border-[var(--accent)]"
+                          aria-label="Marcar licença como permanente"
+                        />
+                        <span className="pointer-events-none absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white opacity-0 peer-checked:opacity-100">✓</span>
+                      </span>
+                      <span className="text-white font-medium group-hover:text-white transition-colors">Permanente</span>
                     </label>
                     {!editForm.isPermanent && (
                       <input
