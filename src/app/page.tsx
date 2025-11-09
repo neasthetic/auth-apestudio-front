@@ -112,13 +112,13 @@ export default function Home() {
                     <h2 className="text-2xl font-semibold">Visão Geral</h2>
                     <p className="text-sm text-[var(--muted)] mt-1">Resumo rápido das métricas do sistema.</p>
                   </div>
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {loadingDashboard ? (
                       <div className="col-span-4 text-sm text-[var(--muted)]">Carregando métricas...</div>
                     ) : dashboard ? (
                       <>
                         <div
-                          className="card p-4 flex items-center gap-4 cursor-pointer hover:border-[var(--accent)]/40 transition"
+                          className="card p-4 min-h-[96px] flex items-center gap-4 cursor-pointer hover:border-[var(--accent)]/40 transition"
                           onClick={() => setShowClientsModal(true)}
                           role="button"
                           tabIndex={0}
@@ -139,7 +139,7 @@ export default function Home() {
                           </div>
                         </div>
                         <div
-                          className="card p-4 flex items-center gap-4 cursor-pointer hover:border-[var(--accent)]/40 transition"
+                          className="card p-4 min-h-[96px] flex items-center gap-4 cursor-pointer hover:border-[var(--accent)]/40 transition"
                           onClick={() => setShowLicensesModal(true)}
                           role="button"
                           tabIndex={0}
@@ -160,7 +160,7 @@ export default function Home() {
                           </div>
                         </div>
                         <div
-                          className="card p-4 flex items-center gap-4 cursor-pointer hover:border-[var(--accent)]/40 transition"
+                          className="card p-4 min-h-[96px] flex items-center gap-4 cursor-pointer hover:border-[var(--accent)]/40 transition"
                           onClick={() => setShowScriptsModal(true)}
                           role="button"
                           tabIndex={0}
@@ -183,7 +183,12 @@ export default function Home() {
                   </div>
                   <div className="grid gap-4 lg:grid-cols-2">
                     <div className="card p-4 space-y-3">
-                      <h3 className="text-sm font-semibold">Script com mais licenças</h3>
+                      <div className="flex items-center gap-3">
+                        <div className="h-9 w-9 rounded-full border border-emerald-700/40 bg-emerald-500/10 text-emerald-300 flex items-center justify-center">
+                          <Folder className="h-4 w-4" />
+                        </div>
+                        <h3 className="text-sm font-semibold">Script com mais licenças</h3>
+                      </div>
                       {loadingDashboard ? (
                         <p className="text-xs text-[var(--muted)]">Carregando...</p>
                       ) : dashboard?.topScript ? (
@@ -196,7 +201,12 @@ export default function Home() {
                       )}
                     </div>
                     <div className="card p-4 space-y-3">
-                      <h3 className="text-sm font-semibold">Usuário com mais licenças</h3>
+                      <div className="flex items-center gap-3">
+                        <div className="h-9 w-9 rounded-full border border-indigo-700/40 bg-indigo-500/10 text-indigo-300 flex items-center justify-center">
+                          <UserIcon className="h-4 w-4" />
+                        </div>
+                        <h3 className="text-sm font-semibold">Usuário com mais licenças</h3>
+                      </div>
                       {loadingDashboard ? (
                         <p className="text-xs text-[var(--muted)]">Carregando...</p>
                       ) : dashboard?.topUser ? (
@@ -209,7 +219,7 @@ export default function Home() {
                       )}
                     </div>
                   </div>
-                  <div className="card p-4 space-y-3">
+                  <div className="card p-4 space-y-3 max-w-3xl mx-auto">
                     <h3 className="text-sm font-semibold">Última licença criada</h3>
                     {loadingDashboard ? (
                       <p className="text-xs text-[var(--muted)]">Carregando...</p>
