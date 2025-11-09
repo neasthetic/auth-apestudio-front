@@ -46,7 +46,8 @@ export default function LicensesPage() {
     isPermanent: false,
   });
   const [submitting, setSubmitting] = useState(false);
-  const pageReady = !loading;
+  const [profilesLoading, setProfilesLoading] = useState(false);
+  const pageReady = !loading && !profilesLoading;
 
   // Close page modals with ESC
   useEffect(() => {
@@ -96,9 +97,10 @@ export default function LicensesPage() {
           .filter(id => id && !discordProfiles[id])
       )
     );
-    if (missingIds.length === 0) return;
+    if (missingIds.length === 0) return; // nada a buscar, evita flicker
 
     let cancelled = false;
+    setProfilesLoading(true);
     (async () => {
       try {
         const results = await Promise.allSettled(
@@ -119,7 +121,9 @@ export default function LicensesPage() {
           setDiscordProfiles((prev) => ({ ...prev, ...updates }));
         }
       } catch {
-        // silencioso; não bloqueia a UI
+        // Erro silencioso
+      } finally {
+        if (!cancelled) setProfilesLoading(false);
       }
     })();
     return () => { cancelled = true; };
@@ -234,7 +238,7 @@ export default function LicensesPage() {
                     </button>
                   </div>
 
-                  {/* Tabela */}
+                  {/* Tabela (aguarda perfis para evitar flicker) */}
                   <div className="card overflow-hidden">
                     <div className="grid grid-cols-12 border-b border-[var(--border)] px-3 py-3 text-sm text-[var(--muted)]">
                       <div className="col-span-3">Script</div>
@@ -243,7 +247,9 @@ export default function LicensesPage() {
                       <div className="col-span-2">Porta</div>
                       <div className="col-span-2 text-right">Ações</div>
                     </div>
-                    {filtered.length === 0 ? (
+                    {(!pageReady) ? (
+                      <div className="px-3 py-10 text-center text-[var(--muted)]">Carregando perfis...</div>
+                    ) : filtered.length === 0 ? (
                       <div className="px-3 py-10 text-center text-[var(--muted)]">Nenhuma licença encontrada.</div>
                     ) : (
                       filtered.map((lic) => {
