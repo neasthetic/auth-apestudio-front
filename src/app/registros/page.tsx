@@ -28,6 +28,8 @@ export default function RegistrosPage() {
   const [showTokens, setShowTokens] = useState<Record<string, boolean>>({});
   const [detailLog, setDetailLog] = useState<LicenseLog | null>(null);
   const [showDetailToken, setShowDetailToken] = useState(false);
+  const [actorProfiles, setActorProfiles] = useState<Record<string, { username: string; avatar_url: string }>>({});
+  const [actorProfilesLoading, setActorProfilesLoading] = useState(false);
 
   const fetchLogs = async () => {
     if (user?.role !== "admin") return;
@@ -57,6 +59,45 @@ export default function RegistrosPage() {
     if (user?.role === "admin") fetchLogs();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, page, limit, actorType, action, token, userDiscord, scriptName]);
+
+  // Buscar perfis Discord dos atores (avatar + username) quando faltarem
+  useEffect(() => {
+    if (!data.length) return;
+    const missing = Array.from(new Set(
+      data
+        .filter(l => l.actorDiscordId && !l.actorUsername && !actorProfiles[l.actorDiscordId])
+        .map(l => l.actorDiscordId as string)
+    ));
+    if (!missing.length) return;
+    let cancelled = false;
+    setActorProfilesLoading(true);
+    (async () => {
+      try {
+        const results = await Promise.allSettled(
+          missing.map(async id => {
+            const res = await fetch(`https://api.neast.dev/v1/discord/users/${id}?raw=true`);
+            if (!res.ok) throw new Error("fetch discord actor failed");
+            const json = await res.json();
+            return { id, username: json.username || json.global_name || id, avatar_url: json.avatar_url || json.default_avatar_url };
+          })
+        );
+        const updates: Record<string, { username: string; avatar_url: string }> = {};
+        results.forEach(r => {
+          if (r.status === "fulfilled") {
+            updates[r.value.id] = { username: r.value.username, avatar_url: r.value.avatar_url };
+          }
+        });
+        if (!cancelled && Object.keys(updates).length) {
+          setActorProfiles(prev => ({ ...prev, ...updates }));
+        }
+      } catch {
+        // silencioso
+      } finally {
+        if (!cancelled) setActorProfilesLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [data, actorProfiles]);
 
   const toggleToken = (id: string) => {
     setShowTokens((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -91,7 +132,7 @@ export default function RegistrosPage() {
                     <p className="text-red-400 font-medium">Apenas administradores podem ver os registros.</p>
                   </div>
                 ) : (
-                  <div className={`space-y-8 page-fade ${(initialLoaded && !loading) ? "ready" : ""}`}>
+                  <div className={`space-y-8 page-fade ${(initialLoaded && !loading && !actorProfilesLoading) ? "ready" : ""}`}> 
                     {/* Filters */}
                     <div className="card p-4 space-y-4">
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3 items-end">
@@ -177,14 +218,24 @@ export default function RegistrosPage() {
                       ) : (
                         data.map(log => {
                           const source = (log.details as any)?.actionSource || "-";
+                          const profile = log.actorDiscordId ? actorProfiles[log.actorDiscordId] : undefined;
+                          const displayName = log.actorUsername || profile?.username || log.actorDiscordId || "Desconhecido";
+                          const avatarUrl = profile?.avatar_url;
                           return (
                             <div key={log._id} className="flex items-center justify-between rounded-lg border border-[var(--border)] bg-[var(--surface)]/30 px-3 py-2">
                               <div className="flex items-center gap-3 min-w-0">
-                                <div className="h-8 w-8 rounded-full border border-[var(--border)] flex items-center justify-center bg-[#141218] text-[11px] font-semibold shrink-0">
-                                  {log.actorUsername ? log.actorUsername.charAt(0).toUpperCase() : (log.actorDiscordId ? log.actorDiscordId.slice(-2) : "?")}
-                                </div>
+                                {avatarUrl ? (
+                                  <div className="relative h-8 w-8 overflow-hidden rounded-full border border-[var(--border)] shrink-0">
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img src={avatarUrl} alt={displayName} className="object-cover h-full w-full" />
+                                  </div>
+                                ) : (
+                                  <div className="h-8 w-8 rounded-full border border-[var(--border)] flex items-center justify-center bg-[#141218] text-[11px] font-semibold shrink-0">
+                                    {displayName.charAt(0).toUpperCase()}
+                                  </div>
+                                )}
                                 <div className="flex items-center gap-2 min-w-0">
-                                  <span className="text-sm font-medium truncate max-w-[180px]">{log.actorUsername || log.actorDiscordId || "Desconhecido"}</span>
+                                  <span className="text-sm font-medium truncate max-w-[160px]" title={displayName}>{displayName}</span>
                                   <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold shrink-0 ${actionColors[log.action]}`}>{log.action}</span>
                                   <span className="text-[10px] text-[var(--muted)] truncate">Fonte: {source}</span>
                                   <span className="text-[10px] text-[var(--muted)]">• {new Date(log.createdAt).toLocaleString()}</span>
