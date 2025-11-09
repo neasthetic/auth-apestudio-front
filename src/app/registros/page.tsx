@@ -15,6 +15,7 @@ export default function RegistrosPage() {
   const [pagination, setPagination] = useState<LicenseLogsResponse["pagination"] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [initialLoaded, setInitialLoaded] = useState(false);
 
   // Filters
   const [page, setPage] = useState(1);
@@ -46,6 +47,7 @@ export default function RegistrosPage() {
       setError(e.message || "Erro ao carregar registros");
     } finally {
       setLoading(false);
+      setInitialLoaded(true);
     }
   };
 
@@ -87,7 +89,7 @@ export default function RegistrosPage() {
                     <p className="text-red-400 font-medium">Apenas administradores podem ver os registros.</p>
                   </div>
                 ) : (
-                  <div className="space-y-8">
+                  <div className={`space-y-8 page-fade ${(initialLoaded && !loading) ? "ready" : ""}`}>
                     {/* Filters */}
                     <div className="card p-4 space-y-4">
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3 items-end">
@@ -167,9 +169,7 @@ export default function RegistrosPage() {
 
                     {/* List */}
                     <div className="space-y-3">
-                      {loading ? (
-                        <p className="text-xs text-[var(--muted)]">Carregando registros...</p>
-                      ) : data.length === 0 ? (
+                      {data.length === 0 ? (
                         <p className="text-xs text-[var(--muted)]">Nenhum registro encontrado.</p>
                       ) : (
                         data.map(log => {

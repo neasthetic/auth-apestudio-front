@@ -19,6 +19,7 @@ export default function ScriptsPage() {
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [showCreateScriptModal, setShowCreateScriptModal] = useState(false);
+  const pageReady = !loading;
 
   const loadAll = async () => {
     if (user?.role !== "admin") return;
@@ -81,7 +82,7 @@ export default function ScriptsPage() {
               </div>
 
               {/* Body */}
-              <div className="container-page pb-16">
+              <div className={`container-page pb-16 page-fade ${pageReady ? "ready" : ""}`}>
                 <div className="mx-auto w-full max-w-5xl">
                   <div className="mb-4">
                     <div className="tag">{scripts.length} scripts criados</div>
@@ -113,9 +114,7 @@ export default function ScriptsPage() {
                       <div className="col-span-2 text-right">Licenças</div>
                     </div>
 
-                    {loading ? (
-                      <div className="px-3 py-10 text-center text-[var(--muted)]">Carregando...</div>
-                    ) : filtered.length === 0 ? (
+                    {filtered.length === 0 ? (
                       <div className="px-3 py-10 text-center text-[var(--muted)]">
                         Nenhum script encontrado.
                       </div>

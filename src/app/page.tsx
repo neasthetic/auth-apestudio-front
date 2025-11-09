@@ -24,6 +24,7 @@ export default function Home() {
   const [dashboard, setDashboard] = useState<DashboardInfosResponse | null>(null);
   const [loadingDashboard, setLoadingDashboard] = useState(true);
   const [showToken, setShowToken] = useState(false);
+  const pageReady = !loadingDashboard;
   
 
   const loadLicenses = async () => {
@@ -103,7 +104,7 @@ export default function Home() {
             </div>
           ) : (
             <>
-              <div className="container-page space-y-12 pb-16">
+              <div className={`container-page space-y-12 pb-16 page-fade ${pageReady ? "ready" : ""}`}>
                 {/* Dashboard Overview */}
                 <div className="mx-auto w-full max-w-5xl space-y-6">
                   <div>
@@ -112,9 +113,7 @@ export default function Home() {
                   </div>
                   {/* Overview stat cards */}
                   <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {loadingDashboard ? (
-                      <div className="col-span-3 text-sm text-[var(--muted)]">Carregando métricas...</div>
-                    ) : dashboard ? (
+                    {dashboard ? (
                       <>
                         <div className="card p-4 flex items-center gap-4">
                           <div className="h-12 w-12 rounded-full border border-indigo-700/40 bg-indigo-500/10 text-indigo-300 flex items-center justify-center">
@@ -169,15 +168,15 @@ export default function Home() {
                           </div>
                         </div>
                       </>
-                    ) : null}
+                    ) : (
+                      <div className="col-span-3 text-sm text-[var(--muted)]">Sem dados do dashboard.</div>
+                    )}
                   </div>
                   
                   <div className="grid gap-4 lg:grid-cols-2">
                     <div className="card p-4 space-y-3">
                       <h3 className="text-sm font-semibold">Script com mais licenças</h3>
-                      {loadingDashboard ? (
-                        <p className="text-xs text-[var(--muted)]">Carregando...</p>
-                      ) : dashboard?.topScript ? (
+                      {dashboard?.topScript ? (
                         <div className="text-sm">
                           <p className="font-medium">{dashboard.topScript.scriptName}</p>
                           <p className="text-[var(--muted)] text-xs">{dashboard.topScript.licenseCount} licenças</p>
@@ -188,9 +187,7 @@ export default function Home() {
                     </div>
                     <div className="card p-4 space-y-3">
                       <h3 className="text-sm font-semibold">Usuário com mais licenças</h3>
-                      {loadingDashboard ? (
-                        <p className="text-xs text-[var(--muted)]">Carregando...</p>
-                      ) : dashboard?.topUser ? (
+                      {dashboard?.topUser ? (
                         <div className="text-sm">
                           <p className="font-medium">{dashboard.topUser.userDiscord}</p>
                           <p className="text-[var(--muted)] text-xs">{dashboard.topUser.licenseCount} licenças</p>
@@ -202,9 +199,7 @@ export default function Home() {
                   </div>
                   <div className="card p-4 space-y-3">
                     <h3 className="text-sm font-semibold">Última licença criada</h3>
-                    {loadingDashboard ? (
-                      <p className="text-xs text-[var(--muted)]">Carregando...</p>
-                    ) : dashboard?.latestLicense ? (
+                    {dashboard?.latestLicense ? (
                       <div className="text-xs flex flex-col gap-1">
                         <div className="flex items-center gap-2">
                           <span className="text-[var(--muted)]">Token:</span>

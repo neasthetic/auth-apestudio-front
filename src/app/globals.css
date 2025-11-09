@@ -109,6 +109,10 @@ body {
   border-radius: 50%;
   animation: l5 1s infinite linear alternate;
 }
+
+/* Page fade-in for simultaneous reveal */
+.page-fade { opacity: 0; transform: translateY(6px); transition: opacity 180ms ease, transform 180ms ease; }
+.page-fade.ready { opacity: 1; transform: translateY(0); }
 @keyframes l5 {
   0%   { box-shadow: 20px 0 #ff0042, -20px 0 #ff004222; background: #ff0042; }
   33%  { box-shadow: 20px 0 #ff0042, -20px 0 #ff004222; background: #ff004222; }

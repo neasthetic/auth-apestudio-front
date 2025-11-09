@@ -44,6 +44,7 @@ export default function LicensesPage() {
     isPermanent: false,
   });
   const [submitting, setSubmitting] = useState(false);
+  const pageReady = !loading;
 
   // Close page modals with ESC
   useEffect(() => {
@@ -170,7 +171,7 @@ export default function LicensesPage() {
                   </div>
                 </div>
               </div>
-              <div className="container-page pb-16">
+              <div className={`container-page pb-16 page-fade ${pageReady ? "ready" : ""}`}>
                 <div className="mx-auto w-full max-w-5xl space-y-5">
                   {/* Filtros e ações */}
                   <div className="flex flex-wrap gap-3 items-center justify-between">
@@ -200,9 +201,7 @@ export default function LicensesPage() {
                       <div className="col-span-2">Porta</div>
                       <div className="col-span-2 text-right">Ações</div>
                     </div>
-                    {loading ? (
-                      <div className="px-3 py-10 text-center text-[var(--muted)]">Carregando...</div>
-                    ) : filtered.length === 0 ? (
+                    {filtered.length === 0 ? (
                       <div className="px-3 py-10 text-center text-[var(--muted)]">Nenhuma licença encontrada.</div>
                     ) : (
                       filtered.map((lic) => {
