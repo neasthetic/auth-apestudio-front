@@ -13,6 +13,7 @@ import { dashboardService } from "@/services/dashboardService";
 import LicenseCard from "@/components/LicenseCard";
 import CreateLicenseModal from "@/components/CreateLicenseModal";
 import DashboardSidebar from "@/components/DashboardSidebar";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function Home() {
   const { user, logout } = useAuth();
@@ -22,6 +23,7 @@ export default function Home() {
   const [showCreateLicenseModal, setShowCreateLicenseModal] = useState(false);
   const [dashboard, setDashboard] = useState<DashboardInfosResponse | null>(null);
   const [loadingDashboard, setLoadingDashboard] = useState(true);
+  const [showToken, setShowToken] = useState(false);
 
   const loadLicenses = async () => {
     if (user?.role !== "admin") return;
@@ -124,11 +126,6 @@ export default function Home() {
                           <span className="text-xs text-[var(--muted)] uppercase tracking-wide">Licenças Ativas</span>
                           <span className="text-2xl font-semibold">{dashboard.totals.activeLicenses}</span>
                         </div>
-                        <div className="card p-4 flex flex-col gap-1">
-                          <span className="text-xs text-[var(--muted)] uppercase tracking-wide">Top Script</span>
-                          <span className="text-lg font-medium truncate">{dashboard.topScript ? `${dashboard.topScript.scriptName}` : "—"}</span>
-                          <span className="text-xs text-[var(--muted)]">{dashboard.topScript ? `${dashboard.topScript.licenseCount} licenças` : "Sem dados"}</span>
-                        </div>
                       </>
                     ) : null}
                   </div>
@@ -166,7 +163,21 @@ export default function Home() {
                       <p className="text-xs text-[var(--muted)]">Carregando...</p>
                     ) : dashboard?.latestLicense ? (
                       <div className="text-xs flex flex-col gap-1">
-                        <div><span className="text-[var(--muted)]">Token:</span> {dashboard.latestLicense.token}</div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[var(--muted)]">Token:</span>
+                          <span className={`font-mono break-all transition ${showToken ? "" : "blur-sm select-none"}`}>
+                            {dashboard.latestLicense.token}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setShowToken((v) => !v)}
+                            className="p-1 rounded border border-transparent hover:border-[var(--border)] hover:bg-[var(--muted-foreground)]/10 text-[var(--muted)]"
+                            aria-label={showToken ? "Ocultar token" : "Exibir token"}
+                            title={showToken ? "Ocultar token" : "Exibir token"}
+                          >
+                            {showToken ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </button>
+                        </div>
                         <div><span className="text-[var(--muted)]">Script:</span> {dashboard.latestLicense.scriptName}</div>
                         <div><span className="text-[var(--muted)]">Usuário:</span> {dashboard.latestLicense.userDiscord}</div>
                         <div><span className="text-[var(--muted)]">Criada:</span> {new Date(dashboard.latestLicense.createdAt).toLocaleString()}</div>
@@ -177,70 +188,7 @@ export default function Home() {
                     )}
                   </div>
                 </div>
-
-                {/* Seção de Licenças */}
-                <div id="licenses">
-                  <div className="mx-auto w-full max-w-5xl flex items-center justify-between mb-6">
-                    <div>
-                      <h2 className="text-2xl font-semibold">Licenças</h2>
-                      <p className="text-[var(--muted)] text-sm mt-1">
-                        {licenses.length} licença{licenses.length !== 1 ? "s" : ""} cadastrada{licenses.length !== 1 ? "s" : ""}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => setShowCreateLicenseModal(true)}
-                      className="btn btn-accent"
-                      disabled={scripts.length === 0}
-                      title={scripts.length === 0 ? "Crie um script primeiro" : ""}
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                      </svg>
-                      Nova Licença
-                    </button>
-                  </div>
-
-                  {loadingLicenses ? (
-                    <div className="text-center py-12 mx-auto max-w-5xl">
-                      <div className="text-[var(--muted)]">Carregando licenças...</div>
-                    </div>
-                  ) : licenses.length === 0 ? (
-                    <div className="text-center py-12 card mx-auto max-w-5xl">
-                      <p className="text-[var(--muted)]">
-                        {scripts.length === 0 
-                          ? "Crie um script primeiro antes de criar licenças." 
-                          : "Nenhuma licença cadastrada ainda."}
-                      </p>
-                      {scripts.length > 0 && (
-                        <button
-                          onClick={() => setShowCreateLicenseModal(true)}
-                          className="mt-4 text-[var(--accent)] hover:opacity-90 transition-opacity"
-                        >
-                          Criar primeira licença
-                        </button>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mx-auto max-w-5xl">
-                      {licenses.map((license) => (
-                        <LicenseCard
-                          key={license._id}
-                          license={license}
-                          onUpdate={loadLicenses}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
               </div>
-
-              {/* Modais */}
-              <CreateLicenseModal
-                isOpen={showCreateLicenseModal}
-                onClose={() => setShowCreateLicenseModal(false)}
-                onSuccess={loadLicenses}
-                scripts={scripts}
-              />
             </>
           )}
             </main>
