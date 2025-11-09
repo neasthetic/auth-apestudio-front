@@ -46,7 +46,7 @@ export default function DashboardSidebar({ user, onLogout }: Props) {
       <nav className="mt-8 grid gap-1 px-1">
         <NavItem href="/" label="Painel" icon={<Home size={18} />} />
         <NavItem href="/scripts" label="Scripts" icon={<FileText size={18} />} />
-        <NavItem href="#licenses" label="Licenças" icon={<KeyRound size={18} />} />
+        <NavItem href="/licenses" label="Licenças" icon={<KeyRound size={18} />} />
       </nav>
 
       <div className="mt-auto px-1">
