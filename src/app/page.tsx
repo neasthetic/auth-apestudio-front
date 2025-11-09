@@ -14,6 +14,7 @@ import LicenseCard from "@/components/LicenseCard";
 import CreateLicenseModal from "@/components/CreateLicenseModal";
 import DashboardSidebar from "@/components/DashboardSidebar";
 import { Eye, EyeOff, User as UserIcon, List, Folder } from "lucide-react";
+import Loader from "@/components/Loader";
 
 export default function Home() {
   const { user, logout } = useAuth();
@@ -23,6 +24,7 @@ export default function Home() {
   const [showCreateLicenseModal, setShowCreateLicenseModal] = useState(false);
   const [dashboard, setDashboard] = useState<DashboardInfosResponse | null>(null);
   const [loadingDashboard, setLoadingDashboard] = useState(true);
+  const [dashboardDelayedReady, setDashboardDelayedReady] = useState(false);
   const [showToken, setShowToken] = useState(false);
   
 
@@ -56,6 +58,7 @@ export default function Home() {
       loadScripts();
       const loadDashboard = async () => {
         setLoadingDashboard(true);
+        let timeoutId: NodeJS.Timeout | null = null;
         try {
           const data = await dashboardService.getInfos();
           setDashboard(data);
@@ -63,7 +66,12 @@ export default function Home() {
           console.error("Erro ao carregar dashboard:", e);
         } finally {
           setLoadingDashboard(false);
+          // Delay reveal +2s for loader display
+          timeoutId = setTimeout(() => setDashboardDelayedReady(true), 2000);
         }
+        return () => {
+          if (timeoutId) clearTimeout(timeoutId);
+        };
       };
       loadDashboard();
     }
@@ -112,8 +120,8 @@ export default function Home() {
                   </div>
                   {/* Overview stat cards */}
                   <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {loadingDashboard ? (
-                      <div className="col-span-3 text-sm text-[var(--muted)]">Carregando métricas...</div>
+                    {(!dashboardDelayedReady || loadingDashboard) ? (
+                      <div className="col-span-3 flex items-center justify-center py-4"><Loader /></div>
                     ) : dashboard ? (
                       <>
                         <div className="card p-4 flex items-center gap-4">
@@ -175,8 +183,8 @@ export default function Home() {
                   <div className="grid gap-4 lg:grid-cols-2">
                     <div className="card p-4 space-y-3">
                       <h3 className="text-sm font-semibold">Script com mais licenças</h3>
-                      {loadingDashboard ? (
-                        <p className="text-xs text-[var(--muted)]">Carregando...</p>
+                      {(!dashboardDelayedReady || loadingDashboard) ? (
+                        <div className="py-2"><Loader /></div>
                       ) : dashboard?.topScript ? (
                         <div className="text-sm">
                           <p className="font-medium">{dashboard.topScript.scriptName}</p>
@@ -188,8 +196,8 @@ export default function Home() {
                     </div>
                     <div className="card p-4 space-y-3">
                       <h3 className="text-sm font-semibold">Usuário com mais licenças</h3>
-                      {loadingDashboard ? (
-                        <p className="text-xs text-[var(--muted)]">Carregando...</p>
+                      {(!dashboardDelayedReady || loadingDashboard) ? (
+                        <div className="py-2"><Loader /></div>
                       ) : dashboard?.topUser ? (
                         <div className="text-sm">
                           <p className="font-medium">{dashboard.topUser.userDiscord}</p>
@@ -202,8 +210,8 @@ export default function Home() {
                   </div>
                   <div className="card p-4 space-y-3">
                     <h3 className="text-sm font-semibold">Última licença criada</h3>
-                    {loadingDashboard ? (
-                      <p className="text-xs text-[var(--muted)]">Carregando...</p>
+                    {(!dashboardDelayedReady || loadingDashboard) ? (
+                      <div className="py-2"><Loader /></div>
                     ) : dashboard?.latestLicense ? (
                       <div className="text-xs flex flex-col gap-1">
                         <div className="flex items-center gap-2">

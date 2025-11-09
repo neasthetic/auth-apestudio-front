@@ -10,6 +10,7 @@ import { License } from "@/types/license";
 import { Script } from "@/types/script";
 import Image from "next/image";
 import { Info, Pencil, Trash2 } from "lucide-react";
+import Loader from "@/components/Loader";
 
 interface NewLicenseForm {
   scriptId: string;
@@ -201,7 +202,7 @@ export default function LicensesPage() {
                       <div className="col-span-2 text-right">Ações</div>
                     </div>
                     {loading ? (
-                      <div className="px-3 py-10 text-center text-[var(--muted)]">Carregando...</div>
+                      <div className="px-3 py-10 flex items-center justify-center"><Loader /></div>
                     ) : filtered.length === 0 ? (
                       <div className="px-3 py-10 text-center text-[var(--muted)]">Nenhuma licença encontrada.</div>
                     ) : (

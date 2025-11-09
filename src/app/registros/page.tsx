@@ -8,6 +8,7 @@ import { logsService } from "@/services/logsService";
 import { LicenseLog, LicenseLogsResponse, LicenseLogAction, LicenseLogActorType } from "@/types/logs";
 import Image from "next/image";
 import { Eye, EyeOff, ChevronLeft, ChevronRight, RefreshCcw } from "lucide-react";
+import Loader from "@/components/Loader";
 
 export default function RegistrosPage() {
   const { user, logout } = useAuth();
@@ -168,7 +169,7 @@ export default function RegistrosPage() {
                     {/* List */}
                     <div className="space-y-3">
                       {loading ? (
-                        <p className="text-xs text-[var(--muted)]">Carregando registros...</p>
+                        <div className="py-6 flex items-center justify-center"><Loader /></div>
                       ) : data.length === 0 ? (
                         <p className="text-xs text-[var(--muted)]">Nenhum registro encontrado.</p>
                       ) : (

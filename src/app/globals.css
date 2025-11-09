@@ -101,3 +101,18 @@ body {
 .sidebar a { color: #cbd5e1; }
 .sidebar a.active, .sidebar a:hover { color: var(--accent); }
 
+/* Accent loader animation */
+/* Usage: <div class="loader" /> - shows two bouncing dots with accent color */
+.loader {
+  width: 28px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  animation: loader-dots 1s infinite linear alternate;
+}
+@keyframes loader-dots {
+  0%  {box-shadow: 20px 0 var(--accent), -20px 0 rgba(255,0,66,0.2); background: var(--accent);}
+  33% {box-shadow: 20px 0 var(--accent), -20px 0 rgba(255,0,66,0.2); background: rgba(255,0,66,0.2);}
+  66% {box-shadow: 20px 0 rgba(255,0,66,0.2), -20px 0 var(--accent); background: rgba(255,0,66,0.2);}
+  100%{box-shadow: 20px 0 rgba(255,0,66,0.2), -20px 0 var(--accent); background: var(--accent);}
+}
+
