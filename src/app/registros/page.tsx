@@ -63,12 +63,13 @@ export default function RegistrosPage() {
   // Buscar perfis Discord dos atores (avatar + username) quando faltarem
   useEffect(() => {
     if (!data.length) return;
+    // Sempre buscar perfil para cada actorDiscordId que ainda não está no cache
     const missing = Array.from(new Set(
       data
-        .filter(l => l.actorDiscordId && !l.actorUsername && !actorProfiles[l.actorDiscordId])
+        .filter(l => l.actorDiscordId && !actorProfiles[l.actorDiscordId])
         .map(l => l.actorDiscordId as string)
     ));
-    if (!missing.length) return;
+    if (!missing.length) return; // nada novo para buscar
     let cancelled = false;
     setActorProfilesLoading(true);
     (async () => {
@@ -219,7 +220,8 @@ export default function RegistrosPage() {
                         data.map(log => {
                           const source = (log.details as any)?.actionSource || "-";
                           const profile = log.actorDiscordId ? actorProfiles[log.actorDiscordId] : undefined;
-                          const displayName = log.actorUsername || profile?.username || log.actorDiscordId || "Desconhecido";
+                          // Preferir nome vindo do perfil Discord; fallback para actorUsername e depois para ID
+                          const displayName = profile?.username || log.actorUsername || log.actorDiscordId || "Desconhecido";
                           const avatarUrl = profile?.avatar_url;
                           return (
                             <div key={log._id} className="flex items-center justify-between rounded-lg border border-[var(--border)] bg-[var(--surface)]/30 px-3 py-2">
