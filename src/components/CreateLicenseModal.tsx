@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { licenseService } from "@/services/licenseService";
 import { Script } from "@/types/script";
-import { List, X } from "lucide-react";
+import { List, X, Calendar } from "lucide-react";
 
 interface CreateLicenseModalProps {
   isOpen: boolean;
@@ -116,20 +116,27 @@ export default function CreateLicenseModal({ isOpen, onClose, onSuccess, scripts
           </div>
 
           <div>
-            <label className="flex items-center gap-2 text-sm text-[var(--muted)] cursor-pointer">
-              <input
-                type="checkbox"
-                checked={isPermanent}
-                onChange={(e) => setIsPermanent(e.target.checked)}
-                className="w-4 h-4 rounded bg-[var(--surface)] border-[var(--border)]"
-              />
-              Licença Permanente
+            <label className="group flex items-center gap-3 text-sm text-[var(--muted)] cursor-pointer select-none">
+              <span className="relative inline-flex items-center justify-center">
+                <input
+                  type="checkbox"
+                  checked={isPermanent}
+                  onChange={(e) => setIsPermanent(e.target.checked)}
+                  className="peer h-5 w-5 rounded-md border border-[var(--border)] bg-[var(--surface)] appearance-none cursor-pointer transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:ring-offset-0 checked:bg-[var(--accent)] checked:border-[var(--accent)]"
+                  aria-label="Marcar licença como permanente"
+                />
+                <span className="pointer-events-none absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white opacity-0 peer-checked:opacity-100">
+                  ✓
+                </span>
+              </span>
+              <span className="text-white font-medium group-hover:text-white transition-colors">Licença Permanente</span>
             </label>
           </div>
 
           {!isPermanent && (
             <div>
-              <label className="block text-sm font-medium text-[var(--muted)] mb-2">
+              <label className="flex items-center gap-2 text-sm font-medium text-[var(--muted)] mb-2">
+                <Calendar className="h-4 w-4 text-white" />
                 Dias de Validade
               </label>
               <input

@@ -19,19 +19,16 @@ export default function DashboardSidebar({ user, onLogout }: Props) {
     return (
       <Link
         href={href}
-        className={`group relative flex flex-col items-center justify-center gap-2 rounded-2xl px-4 py-5 border overflow-hidden transition ${
+        className={`group flex items-center gap-3 rounded-lg px-3 py-2 border transition ${
           isActive
-            ? "border-[var(--accent)]/60 bg-[var(--accent)]/10 shadow-[0_0_0_1px_var(--accent)]"
-            : "border-[var(--border)] bg-[var(--surface)]/30 hover:border-[var(--accent)]/40 hover:bg-[var(--accent)]/5"
+            ? "border-[var(--accent)]/60 bg-[var(--accent)]/10 text-[var(--accent)]"
+            : "border-[var(--border)] text-slate-300 hover:border-[var(--accent)]/40 hover:bg-[var(--accent)]/5 hover:text-[var(--accent)]"
         }`}
       >
-        <div className={`flex h-10 w-10 items-center justify-center rounded-xl transition ${isActive ? "bg-[var(--accent)]/15 text-[var(--accent)]" : "bg-[var(--surface)] text-slate-300 group-hover:text-[var(--accent)]"}`}>
+        <span className={`flex items-center justify-center ${isActive ? "text-[var(--accent)]" : "text-slate-400 group-hover:text-[var(--accent)]"}`}>
           {icon}
-        </div>
-        <span className={`text-xs font-semibold tracking-wide uppercase ${isActive ? "text-[var(--accent)]" : "text-slate-400 group-hover:text-[var(--accent)]"}`}>{label}</span>
-        {isActive && (
-          <span className="absolute inset-x-6 bottom-2 h-1 rounded-full bg-[var(--accent)]/70" />
-        )}
+        </span>
+        <span className={`text-sm ${isActive ? "font-semibold" : ""}`}>{label}</span>
       </Link>
     );
   };
@@ -53,7 +50,7 @@ export default function DashboardSidebar({ user, onLogout }: Props) {
           </div>
         </div>
         {/* Nav vertically centered */}
-        <nav className="grid gap-4 w-full">
+        <nav className="grid gap-2 w-full">
           <NavItem href="/" label="Painel" icon={<Home size={22} />} />
           <NavItem href="/scripts" label="Scripts" icon={<FileText size={22} />} />
           <NavItem href="/licenses" label="Licenças" icon={<KeyRound size={22} />} />
