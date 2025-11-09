@@ -13,7 +13,7 @@ import { dashboardService } from "@/services/dashboardService";
 import LicenseCard from "@/components/LicenseCard";
 import CreateLicenseModal from "@/components/CreateLicenseModal";
 import DashboardSidebar from "@/components/DashboardSidebar";
-import { Eye, EyeOff, User as UserIcon, List, Folder, X } from "lucide-react";
+import { Eye, EyeOff, User as UserIcon, List, Folder } from "lucide-react";
 
 export default function Home() {
   const { user, logout } = useAuth();
@@ -24,9 +24,7 @@ export default function Home() {
   const [dashboard, setDashboard] = useState<DashboardInfosResponse | null>(null);
   const [loadingDashboard, setLoadingDashboard] = useState(true);
   const [showToken, setShowToken] = useState(false);
-  const [showClientsModal, setShowClientsModal] = useState(false);
-  const [showLicensesModal, setShowLicensesModal] = useState(false);
-  const [showScriptsModal, setShowScriptsModal] = useState(false);
+  
 
   const loadLicenses = async () => {
     if (user?.role !== "admin") return;
@@ -118,12 +116,7 @@ export default function Home() {
                       <div className="col-span-3 text-sm text-[var(--muted)]">Carregando métricas...</div>
                     ) : dashboard ? (
                       <>
-                        <div
-                          className="card p-4 flex items-center gap-4 cursor-pointer hover:border-[var(--accent)]/40 transition"
-                          onClick={() => setShowClientsModal(true)}
-                          role="button"
-                          tabIndex={0}
-                        >
+                        <div className="card p-4 flex items-center gap-4">
                           <div className="h-12 w-12 rounded-full border border-indigo-700/40 bg-indigo-500/10 text-indigo-300 flex items-center justify-center">
                             <UserIcon className="h-5 w-5" />
                           </div>
@@ -142,12 +135,7 @@ export default function Home() {
                             </p>
                           </div>
                         </div>
-                        <div
-                          className="card p-4 flex items-center gap-4 cursor-pointer hover:border-[var(--accent)]/40 transition"
-                          onClick={() => setShowLicensesModal(true)}
-                          role="button"
-                          tabIndex={0}
-                        >
+                        <div className="card p-4 flex items-center gap-4">
                           <div className="h-12 w-12 rounded-full border border-amber-700/40 bg-amber-500/10 text-amber-300 flex items-center justify-center">
                             <List className="h-5 w-5" />
                           </div>
@@ -166,12 +154,7 @@ export default function Home() {
                             </p>
                           </div>
                         </div>
-                        <div
-                          className="card p-4 flex items-center gap-4 cursor-pointer hover:border-[var(--accent)]/40 transition"
-                          onClick={() => setShowScriptsModal(true)}
-                          role="button"
-                          tabIndex={0}
-                        >
+                        <div className="card p-4 flex items-center gap-4">
                           <div className="h-12 w-12 rounded-full border border-emerald-700/40 bg-emerald-500/10 text-emerald-300 flex items-center justify-center">
                             <Folder className="h-5 w-5" />
                           </div>
@@ -188,109 +171,7 @@ export default function Home() {
                       </>
                     ) : null}
                   </div>
-                  {/* Stat modals */}
-                  {dashboard && (
-                    <>
-                      {/* Clients */}
-                      {showClientsModal && (
-                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-                          <div className="card w-full max-w-md p-6">
-                            <div className="flex items-center justify-between mb-4">
-                              <div className="flex items-center gap-3">
-                                <div className="h-9 w-9 rounded-full border border-indigo-700/40 bg-indigo-500/10 text-indigo-300 flex items-center justify-center">
-                                  <UserIcon className="h-5 w-5" />
-                                </div>
-                                <h2 className="text-lg font-semibold">Clientes</h2>
-                              </div>
-                              <button onClick={() => setShowClientsModal(false)} className="text-[var(--muted)] hover:text-white" aria-label="Fechar">
-                                <X className="h-5 w-5" />
-                              </button>
-                            </div>
-                            <div className="text-sm space-y-1">
-                              <div className="flex items-center justify-between">
-                                <span className="text-[var(--muted)]">Total de clientes</span>
-                                <span className="font-medium">{dashboard.totals.customers}</span>
-                              </div>
-                              <div className="flex items-center justify-between">
-                                <span className="text-[var(--muted)]">Licenças ativas por cliente</span>
-                                <span className="font-medium">
-                                  {(() => {
-                                    const c = dashboard.totals.customers || 0;
-                                    const l = dashboard.totals.activeLicenses || 0;
-                                    const ratio = c > 0 ? (l / c) : 0;
-                                    return `${ratio.toFixed(2)}x`;
-                                  })()}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      {/* Licenses */}
-                      {showLicensesModal && (
-                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-                          <div className="card w-full max-w-md p-6">
-                            <div className="flex items-center justify-between mb-4">
-                              <div className="flex items-center gap-3">
-                                <div className="h-9 w-9 rounded-full border border-amber-700/40 bg-amber-500/10 text-amber-300 flex items-center justify-center">
-                                  <List className="h-5 w-5" />
-                                </div>
-                                <h2 className="text-lg font-semibold">Licenças Ativas</h2>
-                              </div>
-                              <button onClick={() => setShowLicensesModal(false)} className="text-[var(--muted)] hover:text-white" aria-label="Fechar">
-                                <X className="h-5 w-5" />
-                              </button>
-                            </div>
-                            <div className="text-sm space-y-1">
-                              <div className="flex items-center justify-between">
-                                <span className="text-[var(--muted)]">Total de licenças ativas</span>
-                                <span className="font-medium">{dashboard.totals.activeLicenses}</span>
-                              </div>
-                              <div className="flex items-center justify-between">
-                                <span className="text-[var(--muted)]">Licenças por script</span>
-                                <span className="font-medium">
-                                  {(() => {
-                                    const s = dashboard.totals.scripts || 0;
-                                    const l = dashboard.totals.activeLicenses || 0;
-                                    const ratio = s > 0 ? (l / s) : 0;
-                                    return `${ratio.toFixed(2)}x`;
-                                  })()}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      {/* Scripts */}
-                      {showScriptsModal && (
-                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-                          <div className="card w-full max-w-md p-6">
-                            <div className="flex items-center justify-between mb-4">
-                              <div className="flex items-center gap-3">
-                                <div className="h-9 w-9 rounded-full border border-emerald-700/40 bg-emerald-500/10 text-emerald-300 flex items-center justify-center">
-                                  <Folder className="h-5 w-5" />
-                                </div>
-                                <h2 className="text-lg font-semibold">Scripts</h2>
-                              </div>
-                              <button onClick={() => setShowScriptsModal(false)} className="text-[var(--muted)] hover:text-white" aria-label="Fechar">
-                                <X className="h-5 w-5" />
-                              </button>
-                            </div>
-                            <div className="text-sm space-y-1">
-                              <div className="flex items-center justify-between">
-                                <span className="text-[var(--muted)]">Total de scripts</span>
-                                <span className="font-medium">{dashboard.totals.scripts}</span>
-                              </div>
-                              <div className="flex items-center justify-between">
-                                <span className="text-[var(--muted)]">Mais popular</span>
-                                <span className="font-medium">{dashboard.topScript ? `${dashboard.topScript.scriptName} • ${dashboard.topScript.licenseCount}` : "Sem dados"}</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </>
-                  )}
+                  
                   <div className="grid gap-4 lg:grid-cols-2">
                     <div className="card p-4 space-y-3">
                       <h3 className="text-sm font-semibold">Script com mais licenças</h3>
