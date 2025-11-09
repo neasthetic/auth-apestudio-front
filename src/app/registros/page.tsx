@@ -90,15 +90,15 @@ export default function RegistrosPage() {
                   <div className="space-y-8">
                     {/* Filters */}
                     <div className="card p-4 space-y-4">
-                      <div className="flex flex-wrap gap-3">
-                        <div className="flex flex-col">
-                          <label className="text-xs text-[var(--muted)]">Ação</label>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3 items-end">
+                        <div className="space-y-1">
+                          <label className="text-[11px] text-[var(--muted)] font-medium">Ação</label>
                           <select
                             value={action}
                             onChange={(e) => {
                               setPage(1); setAction(e.target.value as LicenseLogAction | "");
                             }}
-                            className="bg-[#141218] border border-[var(--border)] rounded px-2 py-1 text-sm"
+                            className="w-full h-9 rounded-lg bg-[var(--surface)] border border-[var(--border)] px-3 text-sm outline-none focus:border-zinc-500"
                           >
                             <option value="">Todas</option>
                             <option value="CREATE">CREATE</option>
@@ -106,58 +106,58 @@ export default function RegistrosPage() {
                             <option value="DELETE">DELETE</option>
                           </select>
                         </div>
-                        <div className="flex flex-col">
-                          <label className="text-xs text-[var(--muted)]">Ator</label>
+                        <div className="space-y-1">
+                          <label className="text-[11px] text-[var(--muted)] font-medium">Ator</label>
                           <select
                             value={actorType}
                             onChange={(e) => { setPage(1); setActorType(e.target.value as LicenseLogActorType | ""); }}
-                            className="bg-[#141218] border border-[var(--border)] rounded px-2 py-1 text-sm"
+                            className="w-full h-9 rounded-lg bg-[var(--surface)] border border-[var(--border)] px-3 text-sm outline-none focus:border-zinc-500"
                           >
                             <option value="">Todos</option>
                             <option value="admin">admin</option>
                             <option value="bot">bot</option>
                           </select>
                         </div>
-                        <div className="flex flex-col">
-                          <label className="text-xs text-[var(--muted)]">Token</label>
+                        <div className="space-y-1">
+                          <label className="text-[11px] text-[var(--muted)] font-medium">Token</label>
                           <input
                             value={token}
                             onChange={(e) => { setPage(1); setToken(e.target.value); }}
                             placeholder="Token"
-                            className="bg-[#141218] border border-[var(--border)] rounded px-2 py-1 text-sm"
+                            className="w-full h-9 rounded-lg bg-[var(--surface)] border border-[var(--border)] px-3 text-sm outline-none placeholder:text-[var(--muted)] focus:border-zinc-500"
                           />
                         </div>
-                        <div className="flex flex-col">
-                          <label className="text-xs text-[var(--muted)]">Usuário Discord</label>
+                        <div className="space-y-1">
+                          <label className="text-[11px] text-[var(--muted)] font-medium">Usuário Discord</label>
                           <input
                             value={userDiscord}
                             onChange={(e) => { setPage(1); setUserDiscord(e.target.value); }}
                             placeholder="Discord ID"
-                            className="bg-[#141218] border border-[var(--border)] rounded px-2 py-1 text-sm"
+                            className="w-full h-9 rounded-lg bg-[var(--surface)] border border-[var(--border)] px-3 text-sm outline-none placeholder:text-[var(--muted)] focus:border-zinc-500"
                           />
                         </div>
-                        <div className="flex flex-col">
-                          <label className="text-xs text-[var(--muted)]">Script</label>
+                        <div className="space-y-1">
+                          <label className="text-[11px] text-[var(--muted)] font-medium">Script</label>
                           <input
                             value={scriptName}
                             onChange={(e) => { setPage(1); setScriptName(e.target.value); }}
                             placeholder="Nome do script"
-                            className="bg-[#141218] border border-[var(--border)] rounded px-2 py-1 text-sm"
+                            className="w-full h-9 rounded-lg bg-[var(--surface)] border border-[var(--border)] px-3 text-sm outline-none placeholder:text-[var(--muted)] focus:border-zinc-500"
                           />
                         </div>
-                        <div className="flex flex-col">
-                          <label className="text-xs text-[var(--muted)]">Itens / página</label>
+                        <div className="space-y-1">
+                          <label className="text-[11px] text-[var(--muted)] font-medium">Itens / página</label>
                           <select
                             value={limit}
                             onChange={(e) => { setPage(1); setLimit(Number(e.target.value)); }}
-                            className="bg-[#141218] border border-[var(--border)] rounded px-2 py-1 text-sm"
+                            className="w-full h-9 rounded-lg bg-[var(--surface)] border border-[var(--border)] px-3 text-sm outline-none focus:border-zinc-500"
                           >
                             {[20,40,60,100].map(n => <option key={n} value={n}>{n}</option>)}
                           </select>
                         </div>
                         <button
                           onClick={() => { setPage(1); fetchLogs(); }}
-                          className="btn btn-accent h-fit mt-5 flex items-center gap-1"
+                          className="btn btn-accent h-9 self-end inline-flex items-center justify-center gap-2"
                         >
                           <RefreshCcw size={14} /> Atualizar
                         </button>
