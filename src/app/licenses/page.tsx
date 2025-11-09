@@ -25,6 +25,8 @@ export default function LicensesPage() {
   const [licenses, setLicenses] = useState<License[]>([]);
   const [scripts, setScripts] = useState<Script[]>([]);
   const [loading, setLoading] = useState(true);
+  // Cache com perfis do Discord buscados pela API externa
+  const [discordProfiles, setDiscordProfiles] = useState<Record<string, { username: string; avatar_url: string }>>({});
   const [queryUserDiscord, setQueryUserDiscord] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDetailLicense, setShowDetailLicense] = useState<License | null>(null);
@@ -82,6 +84,46 @@ export default function LicensesPage() {
     loadAll();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
+
+  // Busca nome e avatar do Discord via API do usuário quando não vier do backend
+  useEffect(() => {
+    if (!licenses.length) return;
+    const missingIds = Array.from(
+      new Set(
+        licenses
+          .filter(l => !(l.userName && l.userAvatar))
+          .map(l => l.userDiscord)
+          .filter(id => id && !discordProfiles[id])
+      )
+    );
+    if (missingIds.length === 0) return;
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const results = await Promise.allSettled(
+          missingIds.map(async (id) => {
+            const res = await fetch(`https://api.neast.dev/v1/discord/users/${id}?raw=true`);
+            if (!res.ok) throw new Error("discord fetch failed");
+            const json = await res.json();
+            return { id, username: json.username || json.global_name || id, avatar_url: json.avatar_url || json.default_avatar_url } as { id: string; username: string; avatar_url: string };
+          })
+        );
+        const updates: Record<string, { username: string; avatar_url: string }> = {};
+        results.forEach((r) => {
+          if (r.status === "fulfilled" && r.value) {
+            updates[r.value.id] = { username: r.value.username, avatar_url: r.value.avatar_url };
+          }
+        });
+        if (!cancelled && Object.keys(updates).length) {
+          setDiscordProfiles((prev) => ({ ...prev, ...updates }));
+        }
+      } catch {
+        // silencioso; não bloqueia a UI
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [licenses, discordProfiles]);
 
   const filtered = useMemo(() => {
     const q = queryUserDiscord.trim();
@@ -207,6 +249,8 @@ export default function LicensesPage() {
                       filtered.map((lic) => {
                         const [ip, port] = (lic.ipPort || "").split(":");
                         const isExpired = !lic.isPermanent && lic.expiresAt ? new Date(lic.expiresAt) < new Date() : false;
+                        const displayAvatar = lic.userAvatar || discordProfiles[lic.userDiscord]?.avatar_url;
+                        const displayName = lic.userName || discordProfiles[lic.userDiscord]?.username || lic.userDiscord;
                         return (
                           <div key={lic.token} className="grid grid-cols-12 items-center px-3 py-3 text-sm border-t border-[var(--border)]">
                             <div className="col-span-3 font-medium truncate flex items-center gap-2">
@@ -218,16 +262,16 @@ export default function LicensesPage() {
                               <span className="truncate">{lic.scriptName}</span>
                             </div>
                             <div className="col-span-3 flex items-center gap-2 min-w-0">
-                              {lic.userAvatar ? (
+                              {displayAvatar ? (
                                 <div className="relative h-6 w-6 overflow-hidden rounded-full border border-[var(--border)]">
-                                  <Image src={lic.userAvatar} alt={lic.userName || lic.userDiscord} fill className="object-cover" unoptimized />
+                                  <Image src={displayAvatar} alt={displayName} fill className="object-cover" unoptimized />
                                 </div>
                               ) : (
                                 <div className="h-6 w-6 rounded-full bg-[var(--surface)] flex items-center justify-center text-[10px] border border-[var(--border)]">
                                   {lic.userDiscord.slice(-2)}
                                 </div>
                               )}
-                              <span className="truncate" title={lic.userName || lic.userDiscord}>{lic.userName || lic.userDiscord}</span>
+                              <span className="truncate" title={displayName}>{displayName}</span>
                             </div>
                             <div className="col-span-2 text-[var(--muted)]">{ip || "-"}</div>
                             <div className="col-span-2 text-[var(--muted)]">{port || "-"}</div>
