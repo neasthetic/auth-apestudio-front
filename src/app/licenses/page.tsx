@@ -251,7 +251,13 @@ export default function LicensesPage() {
           {showCreateModal && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
               <div className="card w-full max-w-md p-6">
-                <h2 className="mb-4 text-lg font-semibold">Criar Licença</h2>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-8 w-8 rounded-full border border-amber-700/40 bg-amber-500/10 text-amber-300 flex items-center justify-center">
+                    {/* Ícone Lista */}
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h7" /></svg>
+                  </div>
+                  <h2 className="text-lg font-semibold">Criar Licença</h2>
+                </div>
                 <form onSubmit={handleCreate} className="space-y-4">
                   <div>
                     <label className="mb-1 block text-sm text-[var(--muted)]">Script *</label>
@@ -330,7 +336,13 @@ export default function LicensesPage() {
           {showDetailLicense && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
               <div className="card w-full p-6" style={{ maxWidth: Math.min(Math.max((showDetailLicense.token.length * 8), 380), 640) }}>
-                <h2 className="mb-4 text-lg font-semibold">Detalhes da Licença</h2>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-8 w-8 rounded-full border border-indigo-700/40 bg-indigo-500/10 text-indigo-300 flex items-center justify-center">
+                    {/* Ícone Info */}
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" /></svg>
+                  </div>
+                  <h2 className="text-lg font-semibold">Detalhes da Licença</h2>
+                </div>
                 <div className="space-y-2 text-sm">
                   <div className="break-all font-mono"><span className="text-[var(--muted)]">Token:</span> {showDetailLicense.token}</div>
                   <div><span className="text-[var(--muted)]">Criada em:</span> {new Date(showDetailLicense.createdAt).toLocaleString()}</div>
@@ -347,7 +359,13 @@ export default function LicensesPage() {
           {editLicense && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
               <div className="card w-full max-w-md p-6">
-                <h2 className="mb-4 text-lg font-semibold">Editar Licença</h2>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-8 w-8 rounded-full border border-green-700/40 bg-green-500/10 text-green-300 flex items-center justify-center">
+                    {/* Ícone Pencil */}
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11 4H4a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+                  </div>
+                  <h2 className="text-lg font-semibold">Editar Licença</h2>
+                </div>
                 <form onSubmit={handleEdit} className="space-y-4 text-sm">
                   <div>
                     <label className="mb-1 block text-sm text-[var(--muted)]">IP</label>

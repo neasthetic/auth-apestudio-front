@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { scriptService } from "@/services/scriptService";
 import { License } from "@/types/license";
+import { Folder, X } from "lucide-react";
 
 interface ScriptLicensesModalProps {
   isOpen: boolean;
@@ -70,21 +71,23 @@ export default function ScriptLicensesModal({
       <div className="bg-zinc-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden border border-zinc-700">
         {/* Header */}
         <div className="p-6 border-b border-zinc-700 flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-bold text-white">
-              Licenças do Script
-            </h2>
-            <p className="text-zinc-400 text-sm mt-1">
-              {scriptName} • {licenses.length} licença{licenses.length !== 1 ? "s" : ""}
-            </p>
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full border border-emerald-700/40 bg-emerald-500/10 text-emerald-300 flex items-center justify-center">
+              <Folder className="h-5 w-5" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-white">Licenças do Script</h2>
+              <p className="text-zinc-400 text-sm mt-1">
+                {scriptName} • {licenses.length} licença{licenses.length !== 1 ? "s" : ""}
+              </p>
+            </div>
           </div>
           <button
             onClick={onClose}
             className="text-zinc-400 hover:text-white transition-colors"
+            aria-label="Fechar"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <X className="w-5 h-5" />
           </button>
         </div>
 

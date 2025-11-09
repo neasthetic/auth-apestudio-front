@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { licenseService } from "@/services/licenseService";
 import { Script } from "@/types/script";
+import { List, X } from "lucide-react";
 
 interface CreateLicenseModalProps {
   isOpen: boolean;
@@ -65,14 +66,18 @@ export default function CreateLicenseModal({ isOpen, onClose, onSuccess, scripts
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <div className="card p-6 w-full max-w-md">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold">Nova Licença</h2>
+          <div className="flex items-center gap-3">
+            <div className="h-9 w-9 rounded-full border border-amber-700/40 bg-amber-500/10 text-amber-300 flex items-center justify-center">
+              <List className="h-5 w-5" />
+            </div>
+            <h2 className="text-xl font-semibold">Nova Licença</h2>
+          </div>
           <button
             onClick={onClose}
             className="text-[var(--muted)] hover:text-white transition-colors"
+            aria-label="Fechar"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <X className="w-5 h-5" />
           </button>
         </div>
 
