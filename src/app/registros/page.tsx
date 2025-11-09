@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { logsService } from "@/services/logsService";
 import { LicenseLog, LicenseLogsResponse, LicenseLogAction, LicenseLogActorType } from "@/types/logs";
 import Image from "next/image";
-import { Eye, EyeOff, ChevronLeft, ChevronRight, RefreshCcw } from "lucide-react";
+import { Eye, EyeOff, ChevronLeft, ChevronRight, RefreshCcw, Info } from "lucide-react";
 
 export default function RegistrosPage() {
   const { user, logout } = useAuth();
@@ -26,6 +26,8 @@ export default function RegistrosPage() {
   const [userDiscord, setUserDiscord] = useState("");
   const [scriptName, setScriptName] = useState("");
   const [showTokens, setShowTokens] = useState<Record<string, boolean>>({});
+  const [detailLog, setDetailLog] = useState<LicenseLog | null>(null);
+  const [showDetailToken, setShowDetailToken] = useState(false);
 
   const fetchLogs = async () => {
     if (user?.role !== "admin") return;
@@ -167,51 +169,35 @@ export default function RegistrosPage() {
                       {error && <p className="text-xs text-red-400">{error}</p>}
                     </div>
 
-                    {/* List */}
-                    <div className="space-y-3">
+                    {/* List (fixed height with scroll) */}
+                    <div className="card p-2 overflow-hidden">
+                      <div className="max-h-[60vh] overflow-y-auto pr-1 space-y-2">
                       {data.length === 0 ? (
-                        <p className="text-xs text-[var(--muted)]">Nenhum registro encontrado.</p>
+                        <p className="text-xs text-[var(--muted)] px-2 py-2">Nenhum registro encontrado.</p>
                       ) : (
                         data.map(log => {
-                          const show = showTokens[log._id];
+                          const source = (log.details as any)?.actionSource || "-";
                           return (
-                            <div key={log._id} className="card p-3 flex flex-col gap-2">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                  <div className="h-10 w-10 rounded-full border border-[var(--border)] flex items-center justify-center bg-[#141218] text-xs font-semibold">
-                                    {log.actorUsername ? log.actorUsername.charAt(0).toUpperCase() : (log.actorDiscordId ? log.actorDiscordId.slice(-2) : "?")}
-                                  </div>
-                                  <div className="flex flex-col">
-                                    <span className="text-sm font-medium">{log.actorUsername || log.actorDiscordId || "Desconhecido"}</span>
-                                    <span className="text-[10px] text-[var(--muted)]">{log.actorType}</span>
-                                  </div>
+                            <div key={log._id} className="flex items-center justify-between rounded-lg border border-[var(--border)] bg-[var(--surface)]/30 px-3 py-2">
+                              <div className="flex items-center gap-3 min-w-0">
+                                <div className="h-8 w-8 rounded-full border border-[var(--border)] flex items-center justify-center bg-[#141218] text-[11px] font-semibold shrink-0">
+                                  {log.actorUsername ? log.actorUsername.charAt(0).toUpperCase() : (log.actorDiscordId ? log.actorDiscordId.slice(-2) : "?")}
                                 </div>
-                                <span className={`text-[10px] px-2 py-1 rounded-full font-semibold ${actionColors[log.action]}`}>{log.action}</span>
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <span className="text-sm font-medium truncate max-w-[180px]">{log.actorUsername || log.actorDiscordId || "Desconhecido"}</span>
+                                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold shrink-0 ${actionColors[log.action]}`}>{log.action}</span>
+                                  <span className="text-[10px] text-[var(--muted)] truncate">Fonte: {source}</span>
+                                  <span className="text-[10px] text-[var(--muted)]">• {new Date(log.createdAt).toLocaleString()}</span>
+                                </div>
                               </div>
-                              <div className="grid gap-1 text-[11px] md:grid-cols-2">
-                                {log.licenseToken && (
-                                  <div className="flex items-center gap-1">
-                                    <span className="text-[var(--muted)]">Token:</span>
-                                    <span className={`font-mono break-all ${show ? "" : "blur-sm select-none"}`}>{log.licenseToken}</span>
-                                    <button
-                                      onClick={() => toggleToken(log._id)}
-                                      className="p-1 rounded hover:bg-[var(--muted-foreground)]/10"
-                                      aria-label={show ? "Ocultar token" : "Exibir token"}
-                                    >
-                                      {show ? <EyeOff size={14} /> : <Eye size={14} />}
-                                    </button>
-                                  </div>
-                                )}
-                                {log.scriptName && <div><span className="text-[var(--muted)]">Script:</span> {log.scriptName}</div>}
-                                {log.userDiscord && <div><span className="text-[var(--muted)]">Usuário:</span> {log.userDiscord}</div>}
-                                {log.requestIp && <div><span className="text-[var(--muted)]">IP:</span> {log.requestIp}</div>}
-                                <div><span className="text-[var(--muted)]">Criado:</span> {new Date(log.createdAt).toLocaleString()}</div>
-                                {log.details && <div className="col-span-full text-[10px] text-[var(--muted)]">Fonte: {(log.details as any).actionSource || "-"}</div>}
-                              </div>
+                              <button onClick={() => { setDetailLog(log); setShowDetailToken(false); }} className="tag cursor-pointer ml-3">
+                                <Info size={14} /> DETALHES
+                              </button>
                             </div>
                           );
                         })
                       )}
+                      </div>
                     </div>
 
                     {/* Pagination */}
@@ -240,6 +226,42 @@ export default function RegistrosPage() {
                 )}
               </div>
             </main>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Detalhes */}
+      {detailLog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="card w-full p-6" style={{ maxWidth: 640 }}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="h-8 w-8 rounded-full border border-indigo-700/40 bg-indigo-500/10 text-indigo-300 flex items-center justify-center">
+                <Info className="h-4 w-4" />
+              </div>
+              <h2 className="text-lg font-semibold">Detalhes do Registro</h2>
+            </div>
+            <div className="space-y-2 text-sm">
+              <div><span className="text-[var(--muted)]">Autor:</span> {detailLog.actorUsername || detailLog.actorDiscordId || "Desconhecido"} <span className="text-[10px] text-[var(--muted)]">({detailLog.actorType})</span></div>
+              <div><span className="text-[var(--muted)]">Ação:</span> {detailLog.action}</div>
+              <div><span className="text-[var(--muted)]">Criado:</span> {new Date(detailLog.createdAt).toLocaleString()}</div>
+              <div><span className="text-[var(--muted)]">Fonte:</span> {(detailLog.details as any)?.actionSource || "-"}</div>
+              {detailLog.licenseToken && (
+                <div className="flex items-center gap-2">
+                  <span className="text-[var(--muted)]">Token:</span>
+                  <span className={`font-mono break-all ${showDetailToken ? "" : "blur-sm select-none"}`}>{detailLog.licenseToken}</span>
+                  <button onClick={() => setShowDetailToken(v => !v)} className="p-1 rounded hover:bg-[var(--muted-foreground)]/10" aria-label={showDetailToken ? "Ocultar token" : "Exibir token"}>
+                    {showDetailToken ? <EyeOff size={14} /> : <Eye size={14} />}
+                  </button>
+                </div>
+              )}
+              {detailLog.scriptName && <div><span className="text-[var(--muted)]">Script:</span> {detailLog.scriptName}</div>}
+              {detailLog.userDiscord && <div><span className="text-[var(--muted)]">Usuário:</span> {detailLog.userDiscord}</div>}
+              {detailLog.requestIp && <div><span className="text-[var(--muted)]">IP:</span> {detailLog.requestIp}</div>}
+              {detailLog.details && <pre className="text-[10px] text-[var(--muted)] bg-black/20 p-2 rounded border border-[var(--border)] overflow-x-auto">{JSON.stringify(detailLog.details, null, 2)}</pre>}
+            </div>
+            <div className="flex justify-end gap-3 pt-4">
+              <button onClick={() => setDetailLog(null)} className="btn">Fechar</button>
+            </div>
           </div>
         </div>
       )}
