@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { User } from "@/types/user";
-import { Home, FileText, KeyRound, LogOut, ScrollText } from "lucide-react";
+import { Home, FileText, KeyRound, LogOut, ScrollText, UploadCloud } from "lucide-react";
 
 type Props = {
   user: User;
@@ -50,6 +50,7 @@ export default function DashboardSidebar({ user, onLogout }: Props) {
         <NavItem href="/scripts" label="Scripts" icon={<FileText size={18} />} />
         <NavItem href="/licenses" label="Licenças" icon={<KeyRound size={18} />} />
         <NavItem href="/registros" label="Registros" icon={<ScrollText size={18} />} />
+        <NavItem href="/autenticacao" label="Autenticação" icon={<UploadCloud size={18} />} />
       </nav>
 
       <div className="mt-auto px-1">
