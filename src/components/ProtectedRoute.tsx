@@ -10,30 +10,14 @@ export default function ProtectedRoute({
 }) {
   const { user, loading, login } = useAuth();
   const [redirecting, setRedirecting] = useState(false);
-  const [loadingDelay, setLoadingDelay] = useState(true);
   const redirectTimeoutRef = useRef<number | null>(null);
-
-  // Extra 2s after auth loading completes to keep loader visible
-  useEffect(() => {
-    let t: number | null = null;
-    if (!loading) {
-      t = window.setTimeout(() => setLoadingDelay(false), 2000);
-    } else {
-      // when loading starts again, ensure delay is on
-      setLoadingDelay(true);
-    }
-    return () => { if (t) window.clearTimeout(t); };
-  }, [loading]);
 
   useEffect(() => {
     // Se terminou de carregar e não há usuário, inicia o login
     if (!loading && !user && !redirecting) {
-      console.log("Usuário não autenticado, redirecionando para Discord OAuth em 2s...");
+      console.log("Usuário não autenticado, redirecionando para Discord OAuth...");
       setRedirecting(true);
-      // Wait +2s before triggering OAuth to show loader
-      redirectTimeoutRef.current = window.setTimeout(() => {
-        login();
-      }, 2000);
+      login();
     }
     return () => {
       if (redirectTimeoutRef.current) {
@@ -44,7 +28,7 @@ export default function ProtectedRoute({
   }, [user, loading, login, redirecting]);
 
   // Mostra loading enquanto verifica autenticação
-  if (loading || loadingDelay) {
+  if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[var(--background)]">
         <div className="loader"></div>

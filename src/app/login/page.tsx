@@ -17,13 +17,6 @@ function LoginContent() {
   const { saveUserData, login } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [hasProcessed, setHasProcessed] = useState(false);
-  const [loadingDelay, setLoadingDelay] = useState(true);
-
-  // Keep loader visible +2s even after data processed (or error shown)
-  useEffect(() => {
-    const t = window.setTimeout(() => setLoadingDelay(false), 2000);
-    return () => window.clearTimeout(t);
-  }, []);
 
   useEffect(() => {
     // Evita processar múltiplas vezes
@@ -74,7 +67,7 @@ function LoginContent() {
   }, [searchParams, saveUserData, router, hasProcessed]);
 
   // Se há erro, mostra a mensagem com opção de tentar novamente
-  if (error && !loadingDelay) {
+  if (error) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[var(--background)]">
         <div className="flex flex-col items-center gap-6 max-w-md text-center">
@@ -94,7 +87,7 @@ function LoginContent() {
   // Loading normal
   return (
     <div className="flex min-h-screen items-center justify-center bg-[var(--background)]">
-      {loadingDelay ? <div className="loader" /> : <div className="text-white text-sm">Autenticando...</div>}
+      <div className="text-white text-sm">Autenticando com Discord...</div>
     </div>
   );
 }
@@ -102,7 +95,7 @@ function LoginContent() {
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div className="flex min-h-screen items-center justify-center bg-[var(--background)]"><div className="loader" /></div>
+      <div className="flex min-h-screen items-center justify-center bg-[var(--background)]"><div className="text-white text-sm">Carregando...</div></div>
     }>
       <LoginContent />
     </Suspense>
