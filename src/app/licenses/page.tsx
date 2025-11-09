@@ -45,6 +45,21 @@ export default function LicensesPage() {
   });
   const [submitting, setSubmitting] = useState(false);
 
+  // Close page modals with ESC
+  useEffect(() => {
+    const anyOpen = showCreateModal || !!showDetailLicense || !!editLicense;
+    if (!anyOpen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        if (showCreateModal) setShowCreateModal(false);
+        if (showDetailLicense) setShowDetailLicense(null);
+        if (editLicense) setEditLicense(null);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [showCreateModal, showDetailLicense, editLicense]);
+
   const loadAll = async () => {
     if (user?.role !== "admin") return;
     setLoading(true);
@@ -203,9 +218,17 @@ export default function LicensesPage() {
                               />
                               <span className="truncate">{lic.scriptName}</span>
                             </div>
-                            <div className="col-span-3 flex items-center gap-2">
-                              <div className="h-6 w-6 rounded-full bg-[var(--surface)] flex items-center justify-center text-xs border border-[var(--border)]">{lic.userDiscord.slice(-2)}</div>
-                              <span className="truncate" title={lic.userDiscord}>{lic.userDiscord}</span>
+                            <div className="col-span-3 flex items-center gap-2 min-w-0">
+                              {lic.userAvatar ? (
+                                <div className="relative h-6 w-6 overflow-hidden rounded-full border border-[var(--border)]">
+                                  <Image src={lic.userAvatar} alt={lic.userName || lic.userDiscord} fill className="object-cover" unoptimized />
+                                </div>
+                              ) : (
+                                <div className="h-6 w-6 rounded-full bg-[var(--surface)] flex items-center justify-center text-[10px] border border-[var(--border)]">
+                                  {lic.userDiscord.slice(-2)}
+                                </div>
+                              )}
+                              <span className="truncate" title={lic.userName || lic.userDiscord}>{lic.userName || lic.userDiscord}</span>
                             </div>
                             <div className="col-span-2 text-[var(--muted)]">{ip || "-"}</div>
                             <div className="col-span-2 text-[var(--muted)]">{port || "-"}</div>
@@ -306,10 +329,10 @@ export default function LicensesPage() {
           {/* Modal Detalhes */}
           {showDetailLicense && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-              <div className="card w-full max-w-md p-6">
+              <div className="card w-full p-6" style={{ maxWidth: Math.min(Math.max((showDetailLicense.token.length * 8), 380), 640) }}>
                 <h2 className="mb-4 text-lg font-semibold">Detalhes da Licença</h2>
                 <div className="space-y-2 text-sm">
-                  <div><span className="text-[var(--muted)]">Token:</span> {showDetailLicense.token}</div>
+                  <div className="break-all font-mono"><span className="text-[var(--muted)]">Token:</span> {showDetailLicense.token}</div>
                   <div><span className="text-[var(--muted)]">Criada em:</span> {new Date(showDetailLicense.createdAt).toLocaleString()}</div>
                   <div><span className="text-[var(--muted)]">Expira em:</span> {showDetailLicense.isPermanent ? "Nunca" : (showDetailLicense.expiresAt ? new Date(showDetailLicense.expiresAt).toLocaleString() : "-")}</div>
                 </div>

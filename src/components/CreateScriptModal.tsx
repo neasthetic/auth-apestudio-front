@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { scriptService } from "@/services/scriptService";
 
 interface CreateScriptModalProps {
@@ -12,6 +12,16 @@ interface CreateScriptModalProps {
 export default function CreateScriptModal({ isOpen, onClose, onSuccess }: CreateScriptModalProps) {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Close with ESC
+  useEffect(() => {
+    if (!isOpen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [isOpen, onClose]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

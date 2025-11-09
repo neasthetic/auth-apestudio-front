@@ -3,6 +3,8 @@ export interface License {
   token: string;
   scriptName: string;
   userDiscord: string;
+  userName?: string; // opcional, se a API fornecer
+  userAvatar?: string; // opcional, se a API fornecer
   createdAt: string;
   expiresAt?: string;
   ipPort?: string;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { licenseService } from "@/services/licenseService";
 import { Script } from "@/types/script";
 
@@ -17,6 +17,16 @@ export default function CreateLicenseModal({ isOpen, onClose, onSuccess, scripts
   const [isPermanent, setIsPermanent] = useState(false);
   const [expiresInDays, setExpiresInDays] = useState("30");
   const [loading, setLoading] = useState(false);
+
+  // Close with ESC
+  useEffect(() => {
+    if (!isOpen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [isOpen, onClose]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
