@@ -47,8 +47,8 @@ export default function DashboardSidebar({ user, onLogout }: Props) {
           />
         </div>
       </div>
-      {/* Nav below logo */}
-      <div className="flex-1">
+      {/* Nav below logo (vertically centered) */}
+      <div className="flex-1 flex flex-col justify-center">
         <nav className="grid gap-2 w-full">
           <NavItem href="/" label="Painel" icon={<Home size={22} />} />
           <NavItem href="/scripts" label="Scripts" icon={<FileText size={22} />} />
