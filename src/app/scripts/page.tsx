@@ -10,7 +10,6 @@ import { licenseService } from "@/services/licenseService";
 import CreateScriptModal from "@/components/CreateScriptModal";
 import DashboardSidebar from "@/components/DashboardSidebar";
 import Image from "next/image";
-import Loader from "@/components/Loader";
 
 export default function ScriptsPage() {
   const { user, logout } = useAuth();
@@ -115,7 +114,7 @@ export default function ScriptsPage() {
                     </div>
 
                     {loading ? (
-                      <div className="px-3 py-10 flex items-center justify-center"><Loader /></div>
+                      <div className="px-3 py-10 text-center text-[var(--muted)]">Carregando...</div>
                     ) : filtered.length === 0 ? (
                       <div className="px-3 py-10 text-center text-[var(--muted)]">
                         Nenhum script encontrado.
