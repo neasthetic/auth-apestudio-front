@@ -101,3 +101,18 @@ body {
 .sidebar a { color: #cbd5e1; }
 .sidebar a.active, .sidebar a:hover { color: var(--accent); }
 
+/* Loader (accent #ff0042) */
+/* HTML: <div class="loader"></div> */
+.loader {
+  width: 15px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  animation: l5 1s infinite linear alternate;
+}
+@keyframes l5 {
+  0%   { box-shadow: 20px 0 #ff0042, -20px 0 #ff004222; background: #ff0042; }
+  33%  { box-shadow: 20px 0 #ff0042, -20px 0 #ff004222; background: #ff004222; }
+  66%  { box-shadow: 20px 0 #ff004222, -20px 0 #ff0042; background: #ff004222; }
+  100% { box-shadow: 20px 0 #ff004222, -20px 0 #ff0042; background: #ff0042; }
+}
+

@@ -17,6 +17,13 @@ function LoginContent() {
   const { saveUserData, login } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [hasProcessed, setHasProcessed] = useState(false);
+  const [loadingDelay, setLoadingDelay] = useState(true);
+
+  // Keep loader visible +2s even after data processed (or error shown)
+  useEffect(() => {
+    const t = window.setTimeout(() => setLoadingDelay(false), 2000);
+    return () => window.clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     // Evita processar múltiplas vezes
@@ -67,19 +74,15 @@ function LoginContent() {
   }, [searchParams, saveUserData, router, hasProcessed]);
 
   // Se há erro, mostra a mensagem com opção de tentar novamente
-  if (error) {
+  if (error && !loadingDelay) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-900">
+      <div className="flex min-h-screen items-center justify-center bg-[var(--background)]">
         <div className="flex flex-col items-center gap-6 max-w-md text-center">
-          <div className="text-red-400 text-lg font-semibold">
-            Erro na Autenticação
-          </div>
-          <p className="text-white text-base">
-            {error}
-          </p>
+          <div className="text-red-400 text-lg font-semibold">Erro na Autenticação</div>
+          <p className="text-white text-base">{error}</p>
           <button
             onClick={() => login()}
-            className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
+            className="btn btn-accent"
           >
             Tentar Novamente
           </button>
@@ -90,10 +93,8 @@ function LoginContent() {
 
   // Loading normal
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-900">
-      <div className="text-white text-lg">
-        Autenticando com Discord...
-      </div>
+    <div className="flex min-h-screen items-center justify-center bg-[var(--background)]">
+      {loadingDelay ? <div className="loader" /> : <div className="text-white text-sm">Autenticando...</div>}
     </div>
   );
 }
@@ -101,11 +102,7 @@ function LoginContent() {
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div className="flex min-h-screen items-center justify-center bg-zinc-900">
-        <div className="text-white text-lg">
-          Carregando...
-        </div>
-      </div>
+      <div className="flex min-h-screen items-center justify-center bg-[var(--background)]"><div className="loader" /></div>
     }>
       <LoginContent />
     </Suspense>
