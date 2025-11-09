@@ -8,9 +8,11 @@ import { License } from "@/types/license";
 import { scriptService } from "@/services/scriptService";
 import { licenseService } from "@/services/licenseService";
 import CreateScriptModal from "@/components/CreateScriptModal";
+import DashboardSidebar from "@/components/DashboardSidebar";
+import Image from "next/image";
 
 export default function ScriptsPage() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   const [scripts, setScripts] = useState<Script[]>([]);
   const [licenses, setLicenses] = useState<License[]>([]);
@@ -59,75 +61,91 @@ export default function ScriptsPage() {
     <ProtectedRoute>
       {user && (
         <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
-          <main className="container-page py-8">
-            <div className="mb-6">
-              <h1 className="text-2xl font-semibold">Scripts</h1>
-              <p className="mt-1 text-sm text-[var(--muted)]">
-                Abaixo, você pode ver a lista de todos os seus scripts.
-              </p>
-              <div className="mt-3 tag">
-                <span>
-                  {scripts.length}/{scripts.length} scripts criados
-                </span>
-              </div>
-            </div>
+          <div className="flex">
+            {/* Sidebar */}
+            <DashboardSidebar user={user} onLogout={logout} />
 
-            {/* Filtro + Criar */}
-            <div className="mb-4 flex items-center gap-3">
-              <div className="flex-1">
-                <input
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Filtrar por nome"
-                  className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 outline-none focus:border-zinc-500"
-                />
-              </div>
-              <button
-                className="btn btn-accent"
-                onClick={() => setShowCreateScriptModal(true)}
-              >
-                Novo Script
-              </button>
-            </div>
-
-            {/* Tabela */}
-            <div className="card overflow-hidden">
-              <div className="grid grid-cols-12 border-b border-[var(--border)] px-4 py-3 text-sm text-[var(--muted)]">
-                <div className="col-span-7">Nome</div>
-                <div className="col-span-3">Criado em</div>
-                <div className="col-span-2 text-right">Licenças</div>
-              </div>
-
-              {loading ? (
-                <div className="px-4 py-10 text-center text-[var(--muted)]">Carregando...</div>
-              ) : filtered.length === 0 ? (
-                <div className="px-4 py-10 text-center text-[var(--muted)]">
-                  Nenhum script encontrado.
-                </div>
-              ) : (
-                filtered.map((s) => (
-                  <div
-                    key={s._id}
-                    className="grid grid-cols-12 items-center px-4 py-3 text-sm border-t border-[var(--border)]"
-                  >
-                    <div className="col-span-7 font-medium">{s.name}</div>
-                    <div className="col-span-3 text-[var(--muted)]">
-                      {new Date(s.createdAt).toLocaleDateString()}
-                    </div>
-                    <div className="col-span-2 text-right font-semibold">
-                      {licenseCountByScriptName.get(s.name) || 0}
-                    </div>
+            {/* Content */}
+            <main className="flex-1">
+              {/* Top header */}
+              <div className="container-page py-8">
+                <div className="flex items-center gap-3">
+                  <div className="relative size-10 overflow-hidden rounded-full border border-[var(--border)] md:size-12">
+                    <Image src={user.avatar} alt={user.username} fill className="object-cover" unoptimized />
                   </div>
-                ))
-              )}
-            </div>
+                  <div>
+                    <h1 className="text-xl font-semibold tracking-tight md:text-2xl">Scripts</h1>
+                    <p className="text-sm text-[var(--muted)]">Gerencie seus scripts</p>
+                  </div>
+                </div>
+              </div>
 
-            <CreateScriptModal
-              isOpen={showCreateScriptModal}
-              onClose={() => setShowCreateScriptModal(false)}
-              onSuccess={loadAll}
-            />
-          </main>
+              {/* Body */}
+              <div className="container-page pb-16">
+                <div className="mx-auto w-full max-w-5xl">
+                  <div className="mb-4">
+                    <div className="tag">{scripts.length} scripts criados</div>
+                  </div>
+
+                  {/* Filtro + Criar */}
+                  <div className="mb-4 flex items-center gap-3">
+                    <div className="flex-1">
+                      <input
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        placeholder="Filtrar por nome"
+                        className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 outline-none focus:border-zinc-500"
+                      />
+                    </div>
+                    <button
+                      className="btn btn-accent"
+                      onClick={() => setShowCreateScriptModal(true)}
+                    >
+                      Novo Script
+                    </button>
+                  </div>
+
+                  {/* Tabela */}
+                  <div className="card overflow-hidden">
+                    <div className="grid grid-cols-12 border-b border-[var(--border)] px-3 py-3 text-sm text-[var(--muted)]">
+                      <div className="col-span-6">Nome</div>
+                      <div className="col-span-4">Criado em</div>
+                      <div className="col-span-2 text-right">Licenças</div>
+                    </div>
+
+                    {loading ? (
+                      <div className="px-3 py-10 text-center text-[var(--muted)]">Carregando...</div>
+                    ) : filtered.length === 0 ? (
+                      <div className="px-3 py-10 text-center text-[var(--muted)]">
+                        Nenhum script encontrado.
+                      </div>
+                    ) : (
+                      filtered.map((s) => (
+                        <div
+                          key={s._id}
+                          className="grid grid-cols-12 items-center px-3 py-3 text-sm border-t border-[var(--border)]"
+                        >
+                          <div className="col-span-6 font-medium">{s.name}</div>
+                          <div className="col-span-4 text-[var(--muted)]">
+                            {new Date(s.createdAt).toLocaleDateString()}
+                          </div>
+                          <div className="col-span-2 text-right font-semibold">
+                            {licenseCountByScriptName.get(s.name) || 0}
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+
+                  <CreateScriptModal
+                    isOpen={showCreateScriptModal}
+                    onClose={() => setShowCreateScriptModal(false)}
+                    onSuccess={loadAll}
+                  />
+                </div>
+              </div>
+            </main>
+          </div>
         </div>
       )}
     </ProtectedRoute>

@@ -87,7 +87,7 @@ export default function Home() {
               <div className="container-page space-y-12 pb-16">
                 {/* Seção de Licenças */}
                 <div id="licenses">
-                  <div className="flex items-center justify-between mb-6">
+                  <div className="mx-auto w-full max-w-5xl flex items-center justify-between mb-6">
                     <div>
                       <h2 className="text-2xl font-semibold">Licenças</h2>
                       <p className="text-[var(--muted)] text-sm mt-1">
@@ -108,11 +108,11 @@ export default function Home() {
                   </div>
 
                   {loadingLicenses ? (
-                    <div className="text-center py-12">
+                    <div className="text-center py-12 mx-auto max-w-5xl">
                       <div className="text-[var(--muted)]">Carregando licenças...</div>
                     </div>
                   ) : licenses.length === 0 ? (
-                    <div className="text-center py-12 card">
+                    <div className="text-center py-12 card mx-auto max-w-5xl">
                       <p className="text-[var(--muted)]">
                         {scripts.length === 0 
                           ? "Crie um script primeiro antes de criar licenças." 
@@ -128,7 +128,7 @@ export default function Home() {
                       )}
                     </div>
                   ) : (
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mx-auto max-w-5xl">
                       {licenses.map((license) => (
                         <LicenseCard
                           key={license._id}
