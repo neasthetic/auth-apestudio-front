@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { User } from "@/types/user";
-import { Home, FileText, KeyRound, LogOut } from "lucide-react";
+import { Home, FileText, KeyRound, LogOut, ScrollText } from "lucide-react";
 
 type Props = {
   user: User;
@@ -31,14 +31,16 @@ export default function DashboardSidebar({ user, onLogout }: Props) {
 
   return (
     <aside className="sidebar hidden min-h-screen shrink-0 md:flex md:flex-col md:py-6 md:px-4">
-      {/* Profile */}
-      <div className="flex items-center gap-3 px-2">
-        <div className="relative h-11 w-11 overflow-hidden rounded-full border border-[var(--border)]">
-          <Image src={user.avatar} alt={user.username} fill className="object-cover" unoptimized />
-        </div>
-        <div>
-          <div className="text-xs text-[var(--muted)]">Bem-vindo</div>
-          <div className="font-semibold text-slate-100">{user.username}</div>
+      {/* Logo */}
+      <div className="px-2 mb-4">
+        <div className="relative w-40 h-12">
+          <Image
+            src="https://i.ibb.co/WR4k0HQ/complete-logo.png"
+            alt="Logo"
+            fill
+            className="object-contain"
+            priority
+          />
         </div>
       </div>
 
@@ -47,6 +49,7 @@ export default function DashboardSidebar({ user, onLogout }: Props) {
         <NavItem href="/" label="Painel" icon={<Home size={18} />} />
         <NavItem href="/scripts" label="Scripts" icon={<FileText size={18} />} />
         <NavItem href="/licenses" label="Licenças" icon={<KeyRound size={18} />} />
+        <NavItem href="/registros" label="Registros" icon={<ScrollText size={18} />} />
       </nav>
 
       <div className="mt-auto px-1">
