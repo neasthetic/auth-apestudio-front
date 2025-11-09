@@ -24,7 +24,9 @@ export default function Home() {
   const [dashboard, setDashboard] = useState<DashboardInfosResponse | null>(null);
   const [loadingDashboard, setLoadingDashboard] = useState(true);
   const [showToken, setShowToken] = useState(false);
-  const pageReady = !loadingDashboard;
+  const [topUserProfile, setTopUserProfile] = useState<{ username: string; avatar_url: string } | null>(null);
+  const [topUserLoading, setTopUserLoading] = useState(false);
+  const pageReady = !loadingDashboard && !topUserLoading;
   
 
   const loadLicenses = async () => {
@@ -69,6 +71,32 @@ export default function Home() {
       loadDashboard();
     }
   }, [user]);
+
+  // Buscar avatar/nome do topUser (cliente com mais licenças) e evitar flicker do ID cru
+  useEffect(() => {
+    const id = dashboard?.topUser?.userDiscord;
+    if (!id) return;
+    let cancelled = false;
+    setTopUserLoading(true);
+    (async () => {
+      try {
+        const res = await fetch(`https://api.neast.dev/v1/discord/users/${id}?raw=true`);
+        if (!res.ok) throw new Error("fetch falhou");
+        const json = await res.json();
+        if (!cancelled) {
+          setTopUserProfile({
+            username: json.username || json.global_name || id,
+            avatar_url: json.avatar_url || json.default_avatar_url,
+          });
+        }
+      } catch {
+        if (!cancelled) setTopUserProfile(null);
+      } finally {
+        if (!cancelled) setTopUserLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [dashboard?.topUser?.userDiscord]);
 
   return (
     <ProtectedRoute>
@@ -175,7 +203,7 @@ export default function Home() {
                   
                   <div className="grid gap-4 lg:grid-cols-2">
                     <div className="card p-4 space-y-3">
-                      <h3 className="text-sm font-semibold">Script com mais licenças</h3>
+                      <h3 className="text-sm font-semibold">SCRIPT COM MAIS LICENÇAS</h3>
                       {dashboard?.topScript ? (
                         <div className="text-sm">
                           <p className="font-medium">{dashboard.topScript.scriptName}</p>
@@ -186,19 +214,37 @@ export default function Home() {
                       )}
                     </div>
                     <div className="card p-4 space-y-3">
-                      <h3 className="text-sm font-semibold">Usuário com mais licenças</h3>
+                      <h3 className="text-sm font-semibold">CLIENTE COM MAIS LICENÇAS</h3>
                       {dashboard?.topUser ? (
-                        <div className="text-sm">
-                          <p className="font-medium">{dashboard.topUser.userDiscord}</p>
-                          <p className="text-[var(--muted)] text-xs">{dashboard.topUser.licenseCount} licenças</p>
-                        </div>
+                        topUserLoading ? (
+                          <p className="text-xs text-[var(--muted)]">Carregando cliente...</p>
+                        ) : (
+                          <div className="flex items-center gap-3 text-sm">
+                            {topUserProfile?.avatar_url ? (
+                              <div className="relative h-10 w-10 overflow-hidden rounded-full border border-[var(--border)]">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={topUserProfile.avatar_url} alt={topUserProfile.username} className="object-cover h-full w-full" />
+                              </div>
+                            ) : (
+                              <div className="h-10 w-10 rounded-full bg-[var(--surface)] flex items-center justify-center text-xs border border-[var(--border)]">
+                                {dashboard.topUser.userDiscord.slice(-2)}
+                              </div>
+                            )}
+                            <div className="flex flex-col min-w-0">
+                              <p className="font-medium truncate max-w-[160px]" title={topUserProfile?.username || dashboard.topUser.userDiscord}>
+                                {topUserProfile?.username || dashboard.topUser.userDiscord}
+                              </p>
+                              <p className="text-[var(--muted)] text-xs">{dashboard.topUser.licenseCount} licenças</p>
+                            </div>
+                          </div>
+                        )
                       ) : (
                         <p className="text-xs text-[var(--muted)]">Nenhum usuário encontrado.</p>
                       )}
                     </div>
                   </div>
                   <div className="card p-4 space-y-3">
-                    <h3 className="text-sm font-semibold">Última licença criada</h3>
+                    <h3 className="text-sm font-semibold">ÚLTIMA LICENÇA CRIADA</h3>
                     {dashboard?.latestLicense ? (
                       <div className="text-xs flex flex-col gap-1">
                         <div className="flex items-center gap-2">
