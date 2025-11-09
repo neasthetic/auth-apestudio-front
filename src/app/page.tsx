@@ -13,7 +13,7 @@ import { dashboardService } from "@/services/dashboardService";
 import LicenseCard from "@/components/LicenseCard";
 import CreateLicenseModal from "@/components/CreateLicenseModal";
 import DashboardSidebar from "@/components/DashboardSidebar";
-import { Eye, EyeOff, User as UserIcon, List, Folder, X } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function Home() {
   const { user, logout } = useAuth();
@@ -24,9 +24,6 @@ export default function Home() {
   const [dashboard, setDashboard] = useState<DashboardInfosResponse | null>(null);
   const [loadingDashboard, setLoadingDashboard] = useState(true);
   const [showToken, setShowToken] = useState(false);
-  const [showClientsModal, setShowClientsModal] = useState(false);
-  const [showLicensesModal, setShowLicensesModal] = useState(false);
-  const [showScriptsModal, setShowScriptsModal] = useState(false);
 
   const loadLicenses = async () => {
     if (user?.role !== "admin") return;
@@ -112,83 +109,29 @@ export default function Home() {
                     <h2 className="text-2xl font-semibold">Visão Geral</h2>
                     <p className="text-sm text-[var(--muted)] mt-1">Resumo rápido das métricas do sistema.</p>
                   </div>
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     {loadingDashboard ? (
                       <div className="col-span-4 text-sm text-[var(--muted)]">Carregando métricas...</div>
                     ) : dashboard ? (
                       <>
-                        <div
-                          className="card p-4 min-h-[96px] flex items-center gap-4 cursor-pointer hover:border-[var(--accent)]/40 transition"
-                          onClick={() => setShowClientsModal(true)}
-                          role="button"
-                          tabIndex={0}
-                        >
-                          <div className="h-12 w-12 rounded-full border border-indigo-700/40 bg-indigo-500/10 text-indigo-300 flex items-center justify-center">
-                            <UserIcon className="h-6 w-6" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between">
-                              <span className="text-xs text-[var(--muted)] uppercase tracking-wide">Clientes</span>
-                              <span className="text-2xl font-semibold">{dashboard.totals.customers}</span>
-                            </div>
-                            <div className="text-[11px] text-[var(--muted)] mt-1">
-                              {dashboard.totals.customers > 0
-                                ? `${(dashboard.totals.activeLicenses / dashboard.totals.customers).toFixed(2)}x licenças por cliente`
-                                : "-"}
-                            </div>
-                          </div>
+                        <div className="card p-4 flex flex-col gap-1">
+                          <span className="text-xs text-[var(--muted)] uppercase tracking-wide">Scripts</span>
+                          <span className="text-2xl font-semibold">{dashboard.totals.scripts}</span>
                         </div>
-                        <div
-                          className="card p-4 min-h-[96px] flex items-center gap-4 cursor-pointer hover:border-[var(--accent)]/40 transition"
-                          onClick={() => setShowLicensesModal(true)}
-                          role="button"
-                          tabIndex={0}
-                        >
-                          <div className="h-12 w-12 rounded-full border border-amber-700/40 bg-amber-500/10 text-amber-300 flex items-center justify-center">
-                            <List className="h-5 w-5" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between">
-                              <span className="text-xs text-[var(--muted)] uppercase tracking-wide">Licenças</span>
-                              <span className="text-2xl font-semibold">{dashboard.totals.activeLicenses}</span>
-                            </div>
-                            <div className="text-[11px] text-[var(--muted)] mt-1">
-                              {dashboard.totals.scripts > 0
-                                ? `${(dashboard.totals.activeLicenses / dashboard.totals.scripts).toFixed(2)}x licenças por script`
-                                : "-"}
-                            </div>
-                          </div>
+                        <div className="card p-4 flex flex-col gap-1">
+                          <span className="text-xs text-[var(--muted)] uppercase tracking-wide">Clientes</span>
+                          <span className="text-2xl font-semibold">{dashboard.totals.customers}</span>
                         </div>
-                        <div
-                          className="card p-4 min-h-[96px] flex items-center gap-4 cursor-pointer hover:border-[var(--accent)]/40 transition"
-                          onClick={() => setShowScriptsModal(true)}
-                          role="button"
-                          tabIndex={0}
-                        >
-                          <div className="h-12 w-12 rounded-full border border-emerald-700/40 bg-emerald-500/10 text-emerald-300 flex items-center justify-center">
-                            <Folder className="h-5 w-5" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between">
-                              <span className="text-xs text-[var(--muted)] uppercase tracking-wide">Scripts</span>
-                              <span className="text-2xl font-semibold">{dashboard.totals.scripts}</span>
-                            </div>
-                            <div className="text-[11px] text-[var(--muted)] mt-1">
-                              {dashboard.topScript ? `Mais popular: ${dashboard.topScript.licenseCount} licenças` : "-"}
-                            </div>
-                          </div>
+                        <div className="card p-4 flex flex-col gap-1">
+                          <span className="text-xs text-[var(--muted)] uppercase tracking-wide">Licenças Ativas</span>
+                          <span className="text-2xl font-semibold">{dashboard.totals.activeLicenses}</span>
                         </div>
                       </>
                     ) : null}
                   </div>
                   <div className="grid gap-4 lg:grid-cols-2">
                     <div className="card p-4 space-y-3">
-                      <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 rounded-full border border-emerald-700/40 bg-emerald-500/10 text-emerald-300 flex items-center justify-center">
-                          <Folder className="h-4 w-4" />
-                        </div>
-                        <h3 className="text-sm font-semibold">Script com mais licenças</h3>
-                      </div>
+                      <h3 className="text-sm font-semibold">Script com mais licenças</h3>
                       {loadingDashboard ? (
                         <p className="text-xs text-[var(--muted)]">Carregando...</p>
                       ) : dashboard?.topScript ? (
@@ -201,12 +144,7 @@ export default function Home() {
                       )}
                     </div>
                     <div className="card p-4 space-y-3">
-                      <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 rounded-full border border-indigo-700/40 bg-indigo-500/10 text-indigo-300 flex items-center justify-center">
-                          <UserIcon className="h-4 w-4" />
-                        </div>
-                        <h3 className="text-sm font-semibold">Usuário com mais licenças</h3>
-                      </div>
+                      <h3 className="text-sm font-semibold">Usuário com mais licenças</h3>
                       {loadingDashboard ? (
                         <p className="text-xs text-[var(--muted)]">Carregando...</p>
                       ) : dashboard?.topUser ? (
@@ -219,7 +157,7 @@ export default function Home() {
                       )}
                     </div>
                   </div>
-                  <div className="card p-4 space-y-3 max-w-3xl mx-auto">
+                  <div className="card p-4 space-y-3">
                     <h3 className="text-sm font-semibold">Última licença criada</h3>
                     {loadingDashboard ? (
                       <p className="text-xs text-[var(--muted)]">Carregando...</p>
@@ -254,73 +192,6 @@ export default function Home() {
             </>
           )}
             </main>
-          </div>
-        </div>
-      )}
-      {/* Modals Dashboard */}
-      {showClientsModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="card p-6 w-full max-w-md">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full border border-indigo-700/40 bg-indigo-500/10 text-indigo-300 flex items-center justify-center">
-                  <UserIcon className="h-5 w-5" />
-                </div>
-                <h2 className="text-lg font-semibold">Clientes</h2>
-              </div>
-              <button onClick={() => setShowClientsModal(false)} className="text-[var(--muted)] hover:text-white"><X className="h-5 w-5" /></button>
-            </div>
-            <div className="text-sm space-y-2">
-              <div><span className="text-[var(--muted)]">Total:</span> {dashboard?.totals.customers ?? "-"}</div>
-              <div className="text-[11px] text-[var(--muted)]">
-                {dashboard && dashboard.totals.customers > 0 ? `${(dashboard.totals.activeLicenses / dashboard.totals.customers).toFixed(2)}x licenças por cliente` : "-"}
-              </div>
-            </div>
-            <div className="flex justify-end pt-4"><button className="btn" onClick={() => setShowClientsModal(false)}>Fechar</button></div>
-          </div>
-        </div>
-      )}
-      {showLicensesModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="card p-6 w-full max-w-md">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full border border-amber-700/40 bg-amber-500/10 text-amber-300 flex items-center justify-center">
-                  <List className="h-5 w-5" />
-                </div>
-                <h2 className="text-lg font-semibold">Licenças</h2>
-              </div>
-              <button onClick={() => setShowLicensesModal(false)} className="text-[var(--muted)] hover:text-white"><X className="h-5 w-5" /></button>
-            </div>
-            <div className="text-sm space-y-2">
-              <div><span className="text-[var(--muted)]">Ativas:</span> {dashboard?.totals.activeLicenses ?? "-"}</div>
-              <div className="text-[11px] text-[var(--muted)]">
-                {dashboard && dashboard.totals.scripts > 0 ? `${(dashboard.totals.activeLicenses / dashboard.totals.scripts).toFixed(2)}x licenças por script` : "-"}
-              </div>
-            </div>
-            <div className="flex justify-end pt-4"><button className="btn" onClick={() => setShowLicensesModal(false)}>Fechar</button></div>
-          </div>
-        </div>
-      )}
-      {showScriptsModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="card p-6 w-full max-w-md">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full border border-emerald-700/40 bg-emerald-500/10 text-emerald-300 flex items-center justify-center">
-                  <Folder className="h-5 w-5" />
-                </div>
-                <h2 className="text-lg font-semibold">Scripts</h2>
-              </div>
-              <button onClick={() => setShowScriptsModal(false)} className="text-[var(--muted)] hover:text-white"><X className="h-5 w-5" /></button>
-            </div>
-            <div className="text-sm space-y-2">
-              <div><span className="text-[var(--muted)]">Total:</span> {dashboard?.totals.scripts ?? "-"}</div>
-              <div className="text-[11px] text-[var(--muted)]">
-                {dashboard?.topScript ? `Mais popular: ${dashboard.topScript.licenseCount} licenças` : "-"}
-              </div>
-            </div>
-            <div className="flex justify-end pt-4"><button className="btn" onClick={() => setShowScriptsModal(false)}>Fechar</button></div>
           </div>
         </div>
       )}

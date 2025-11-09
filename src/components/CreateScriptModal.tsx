@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Folder } from "lucide-react";
 import { scriptService } from "@/services/scriptService";
 
 interface CreateScriptModalProps {
@@ -54,12 +53,7 @@ export default function CreateScriptModal({ isOpen, onClose, onSuccess }: Create
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <div className="card p-6 w-full max-w-md">
         <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full border border-emerald-700/40 bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
-              <Folder size={18} />
-            </div>
-            <h2 className="text-xl font-semibold">Novo Script</h2>
-          </div>
+          <h2 className="text-xl font-semibold">Novo Script</h2>
           <button
             onClick={onClose}
             className="text-[var(--muted)] hover:text-white transition-colors"
