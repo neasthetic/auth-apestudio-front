@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { User } from "@/types/user";
-import { Home, FileText, KeyRound, LogOut, ScrollText } from "lucide-react";
+import { Home, FileText, KeyRound, LogOut, ScrollText, UploadCloud } from "lucide-react";
 
 type Props = {
   user: User;
@@ -19,8 +19,10 @@ export default function DashboardSidebar({ user, onLogout }: Props) {
     return (
       <Link
         href={href}
-        className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-colors ${
-          isActive ? "text-[var(--accent)]" : "text-slate-300 hover:text-[var(--accent)]"
+        className={`w-full flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 border transition ${
+          isActive
+            ? "text-[var(--accent)] border-[var(--accent)]/50 bg-[var(--accent)]/10"
+            : "text-slate-300 border-[var(--border)] bg-[var(--surface)]/40 hover:text-[var(--accent)] hover:border-[var(--accent)]/40 hover:bg-[var(--muted-foreground)]/5"
         }`}
       >
         <span className="text-xl" aria-hidden>{icon}</span>
@@ -45,11 +47,12 @@ export default function DashboardSidebar({ user, onLogout }: Props) {
       </div>
 
       {/* Nav */}
-      <nav className="mt-8 grid gap-1 px-1">
+      <nav className="mt-8 grid gap-2 px-1">
         <NavItem href="/" label="Painel" icon={<Home size={18} />} />
         <NavItem href="/scripts" label="Scripts" icon={<FileText size={18} />} />
         <NavItem href="/licenses" label="Licenças" icon={<KeyRound size={18} />} />
         <NavItem href="/registros" label="Registros" icon={<ScrollText size={18} />} />
+        <NavItem href="/autenticacao" label="Autenticação" icon={<UploadCloud size={18} />} />
       </nav>
 
       <div className="mt-auto px-1">
