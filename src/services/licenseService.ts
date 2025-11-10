@@ -155,6 +155,28 @@ class LicenseService {
 
     return response.json();
   }
+
+  /**
+   * Tenta converter uma licença permanente em temporária aplicando um novo prazo.
+   * NOTE: esta rota pode não existir no servidor; tratar erro no cliente.
+   */
+  async makeTemporary(token: string, data: { expiresInDays?: number; expiresAt?: string } = {}): Promise<License> {
+    const response = await fetch(`${API_URL}/api/licenses/${token}/make-temporary`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.error || `Erro ao converter licença para temporária (${response.status})`);
+    }
+
+    return response.json();
+  }
 }
 
 export const licenseService = new LicenseService();

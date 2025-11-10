@@ -202,6 +202,18 @@ export default function LicensesPage() {
         actions.push(licenseService.makePermanent(editLicense.token));
       }
 
+      // convert permanent -> temporary (requires server support)
+      if (editLicense.isPermanent && !isPermanent) {
+        if (!expiresAt) {
+          throw new Error("Para converter uma licença permanente em temporária, selecione uma data de expiração.");
+        }
+        const targetDate = parseDateOnly(expiresAt);
+        if (!targetDate) throw new Error("Data inválida");
+        const now = new Date();
+        if (targetDate.getTime() <= now.getTime()) throw new Error("A data de expiração deve ser futura.");
+        actions.push(licenseService.makeTemporary(editLicense.token, { expiresAt: targetDate.toISOString() }));
+      }
+
       if (!isPermanent && !editLicense.isPermanent) {
         const originalExpires = editLicense.expiresAt ? parseDateOnly(editLicense.expiresAt) : null;
         const targetExpires = expiresAt ? parseDateOnly(expiresAt) : null;
@@ -517,7 +529,7 @@ export default function LicensesPage() {
                               expiresAt: checked ? "" : prev.expiresAt,
                             }));
                           }}
-                          disabled={editLicense?.isPermanent}
+                          
                           className="peer h-5 w-5 rounded-md border border-[var(--border)] bg-[var(--surface)] appearance-none cursor-pointer transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:ring-offset-0 checked:bg-[var(--accent)] checked:border-[var(--accent)]"
                           aria-label="Marcar licença como permanente"
                         />
