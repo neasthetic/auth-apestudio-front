@@ -6,7 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useMemo, useState } from "react";
 import { licenseService } from "@/services/licenseService";
 import { scriptService } from "@/services/scriptService";
-import { License } from "@/types/license";
+import { CreateLicenseDto, License } from "@/types/license";
 import { Script } from "@/types/script";
 import Image from "next/image";
 import { Info, Pencil, Trash2 } from "lucide-react";
@@ -14,7 +14,7 @@ import { Info, Pencil, Trash2 } from "lucide-react";
 interface NewLicenseForm {
   scriptId: string;
   userDiscord: string;
-  ipPort: string;
+  ip: string;
   port: string;
   expiresAt?: string; // ISO date (YYYY-MM-DD)
   isPermanent: boolean;
@@ -34,13 +34,13 @@ export default function LicensesPage() {
   const [createForm, setCreateForm] = useState<NewLicenseForm>({
     scriptId: "",
     userDiscord: "",
-    ipPort: "",
+    ip: "",
     port: "",
     expiresAt: "",
     isPermanent: false,
   });
-  const [editForm, setEditForm] = useState<{ ipPort: string; port: string; expiresAt?: string; isPermanent: boolean }>({
-    ipPort: "",
+  const [editForm, setEditForm] = useState<{ ip: string; port: string; expiresAt?: string; isPermanent: boolean }>({
+    ip: "",
     port: "",
     expiresAt: "",
     isPermanent: false,
@@ -137,9 +137,10 @@ export default function LicensesPage() {
 
   const openEdit = (lic: License) => {
     setEditLicense(lic);
+    const [ipOnly, portOnly] = (lic.ipPort || "").split(":");
     setEditForm({
-      ipPort: lic.ipPort || "",
-      port: lic.ipPort?.split(":")[1] || "", // placeholder if port separated
+      ip: ipOnly || "",
+      port: (portOnly || "").trim(),
       expiresAt: lic.expiresAt ? lic.expiresAt.substring(0, 10) : "",
       isPermanent: lic.isPermanent,
     });
@@ -148,15 +149,29 @@ export default function LicensesPage() {
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!createForm.scriptId || !createForm.userDiscord) return alert("Preencha script e usuário");
+    const trimmedIp = createForm.ip.trim();
+    const trimmedPort = createForm.port.trim();
+    if (trimmedPort && Number.isNaN(Number(trimmedPort))) {
+      return alert("Porta inválida");
+    }
     setSubmitting(true);
     try {
-      await licenseService.createLicense({
+      const payload: CreateLicenseDto = {
         scriptId: createForm.scriptId,
         userDiscord: createForm.userDiscord,
-        expiresInDays: !createForm.isPermanent && createForm.expiresAt ? calcDaysFromToday(createForm.expiresAt) : undefined,
-      });
+      };
+
+      if (trimmedIp) payload.ip = trimmedIp;
+      if (trimmedPort) payload.port = Number(trimmedPort);
+      if (createForm.isPermanent) {
+        payload.isPermanent = true;
+      } else if (createForm.expiresAt) {
+        payload.expiresInDays = calcDaysFromToday(createForm.expiresAt);
+      }
+
+      await licenseService.createLicense(payload);
       setShowCreateModal(false);
-      setCreateForm({ scriptId: "", userDiscord: "", ipPort: "", port: "", expiresAt: "", isPermanent: false });
+      setCreateForm({ scriptId: "", userDiscord: "", ip: "", port: "", expiresAt: "", isPermanent: false });
       loadAll();
     } catch (err) {
       alert(err instanceof Error ? err.message : "Erro ao criar licença");
@@ -168,18 +183,42 @@ export default function LicensesPage() {
   const handleEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editLicense) return;
+    const { ip, port, isPermanent, expiresAt } = editForm;
+    const normalized = normalizeIpInput(ip, port);
+    if (normalized.port && Number.isNaN(Number(normalized.port))) {
+      return alert("Porta inválida");
+    }
     setSubmitting(true);
     try {
-      // only updating ip/port or days (simplified placeholder; real API might differ)
-      if (editForm.ipPort) {
-        await licenseService.updateIpPort(editLicense.token, { ipPort: editForm.ipPort });
+      const actions: Array<Promise<unknown>> = [];
+
+      const newIpPort = buildIpPortString(normalized.ip, normalized.port);
+      const currentIpPort = editLicense.ipPort || "";
+      if (newIpPort && newIpPort !== currentIpPort) {
+        actions.push(licenseService.updateIpPort(editLicense.token, { ipPort: newIpPort }));
       }
-      if (!editForm.isPermanent && editForm.expiresAt) {
-        const days = calcDaysFromToday(editForm.expiresAt);
-        if (days > 0) {
-          await licenseService.addDays(editLicense.token, { days });
+
+      if (!editLicense.isPermanent && isPermanent) {
+        actions.push(licenseService.makePermanent(editLicense.token));
+      }
+
+      if (!isPermanent && !editLicense.isPermanent) {
+        const originalExpires = editLicense.expiresAt ? parseDateOnly(editLicense.expiresAt) : null;
+        const targetExpires = expiresAt ? parseDateOnly(expiresAt) : null;
+        if (originalExpires && targetExpires) {
+          const diffDays = differenceInDays(targetExpires, originalExpires);
+          if (diffDays > 0) {
+            actions.push(licenseService.addDays(editLicense.token, { days: diffDays }));
+          } else if (diffDays < 0) {
+            actions.push(licenseService.removeDays(editLicense.token, { days: Math.abs(diffDays) }));
+          }
         }
       }
+
+      for (const action of actions) {
+        await action;
+      }
+
       setEditLicense(null);
       loadAll();
     } catch (err) {
@@ -336,8 +375,15 @@ export default function LicensesPage() {
                     <div>
                       <label className="mb-1 block text-sm text-[var(--muted)]">IP</label>
                       <input
-                        value={createForm.ipPort}
-                        onChange={(e) => setCreateForm({ ...createForm, ipPort: e.target.value })}
+                        value={createForm.ip}
+                        onChange={(e) => {
+                          const normalized = normalizeIpInput(e.target.value, createForm.port);
+                          setCreateForm((prev) => ({
+                            ...prev,
+                            ip: normalized.ip,
+                            port: normalized.port,
+                          }));
+                        }}
                         className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 outline-none focus:border-zinc-500"
                         placeholder="179.156.186.227"
                       />
@@ -346,7 +392,10 @@ export default function LicensesPage() {
                       <label className="mb-1 block text-sm text-[var(--muted)]">Porta</label>
                       <input
                         value={createForm.port}
-                        onChange={(e) => setCreateForm({ ...createForm, port: e.target.value })}
+                        onChange={(e) => {
+                          const next = e.target.value.replace(/[^0-9]/g, "");
+                          setCreateForm((prev) => ({ ...prev, port: next }));
+                        }}
                         className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 outline-none focus:border-zinc-500"
                         placeholder="30120"
                       />
@@ -358,7 +407,14 @@ export default function LicensesPage() {
                         <input
                           type="checkbox"
                           checked={createForm.isPermanent}
-                          onChange={(e) => setCreateForm({ ...createForm, isPermanent: e.target.checked })}
+                          onChange={(e) => {
+                            const checked = e.target.checked;
+                            setCreateForm((prev) => ({
+                              ...prev,
+                              isPermanent: checked,
+                              expiresAt: checked ? "" : prev.expiresAt,
+                            }));
+                          }}
                           className="peer h-5 w-5 rounded-md border border-[var(--border)] bg-[var(--surface)] appearance-none cursor-pointer transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:ring-offset-0 checked:bg-[var(--accent)] checked:border-[var(--accent)]"
                           aria-label="Marcar licença como permanente"
                         />
@@ -424,8 +480,15 @@ export default function LicensesPage() {
                   <div>
                     <label className="mb-1 block text-sm text-[var(--muted)]">IP</label>
                     <input
-                      value={editForm.ipPort}
-                      onChange={(e) => setEditForm({ ...editForm, ipPort: e.target.value })}
+                      value={editForm.ip}
+                      onChange={(e) => {
+                        const normalized = normalizeIpInput(e.target.value, editForm.port);
+                        setEditForm((prev) => ({
+                          ...prev,
+                          ip: normalized.ip,
+                          port: normalized.port || prev.port,
+                        }));
+                      }}
                       className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 outline-none focus:border-zinc-500"
                     />
                   </div>
@@ -433,7 +496,10 @@ export default function LicensesPage() {
                     <label className="mb-1 block text-sm text-[var(--muted)]">Porta</label>
                     <input
                       value={editForm.port}
-                      onChange={(e) => setEditForm({ ...editForm, port: e.target.value })}
+                      onChange={(e) => {
+                        const next = e.target.value.replace(/[^0-9]/g, "");
+                        setEditForm((prev) => ({ ...prev, port: next }));
+                      }}
                       className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 outline-none focus:border-zinc-500"
                     />
                   </div>
@@ -443,7 +509,15 @@ export default function LicensesPage() {
                         <input
                           type="checkbox"
                           checked={editForm.isPermanent}
-                          onChange={(e) => setEditForm({ ...editForm, isPermanent: e.target.checked })}
+                          onChange={(e) => {
+                            const checked = e.target.checked;
+                            setEditForm((prev) => ({
+                              ...prev,
+                              isPermanent: checked,
+                              expiresAt: checked ? "" : prev.expiresAt,
+                            }));
+                          }}
+                          disabled={editLicense?.isPermanent}
                           className="peer h-5 w-5 rounded-md border border-[var(--border)] bg-[var(--surface)] appearance-none cursor-pointer transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:ring-offset-0 checked:bg-[var(--accent)] checked:border-[var(--accent)]"
                           aria-label="Marcar licença como permanente"
                         />
@@ -481,4 +555,35 @@ function calcDaysFromToday(dateStr: string) {
   const target = new Date(dateStr + "T00:00:00");
   const diff = target.getTime() - today.getTime();
   return Math.ceil(diff / (1000 * 60 * 60 * 24));
+}
+
+const MS_PER_DAY = 1000 * 60 * 60 * 24;
+
+function normalizeIpInput(ipValue: string, portValue: string) {
+  const [rawIp = "", rawPort = ""] = ipValue.split(":");
+  const ip = rawIp.trim();
+  const colonPort = rawPort.trim();
+  const fallbackPort = (portValue || "").trim();
+  return {
+    ip,
+    port: colonPort || fallbackPort,
+  };
+}
+
+function buildIpPortString(ip: string, port: string) {
+  const trimmedIp = ip.trim();
+  const trimmedPort = (port || "").trim();
+  if (!trimmedIp) return "";
+  return trimmedPort ? `${trimmedIp}:${trimmedPort}` : trimmedIp;
+}
+
+function parseDateOnly(value: string) {
+  if (!value) return null;
+  const base = value.includes("T") ? new Date(value) : new Date(`${value}T00:00:00`);
+  if (Number.isNaN(base.getTime())) return null;
+  return new Date(Date.UTC(base.getUTCFullYear(), base.getUTCMonth(), base.getUTCDate()));
+}
+
+function differenceInDays(target: Date, current: Date) {
+  return Math.round((target.getTime() - current.getTime()) / MS_PER_DAY);
 }

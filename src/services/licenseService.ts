@@ -135,6 +135,26 @@ class LicenseService {
 
     return response.json();
   }
+
+  /**
+   * Torna a licença permanente
+   */
+  async makePermanent(token: string): Promise<License> {
+    const response = await fetch(`${API_URL}/api/licenses/${token}/make-permanent`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Erro ao tornar licença permanente");
+    }
+
+    return response.json();
+  }
 }
 
 export const licenseService = new LicenseService();

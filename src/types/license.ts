@@ -16,6 +16,10 @@ export interface CreateLicenseDto {
   scriptId: string;
   userDiscord: string;
   expiresInDays?: number;
+  ip?: string;
+  port?: number;
+  ipPort?: string;
+  isPermanent?: boolean;
 }
 
 export interface UpdateIpDto {
