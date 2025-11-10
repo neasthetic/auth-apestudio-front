@@ -120,3 +120,35 @@ body {
   100% { box-shadow: 20px 0 #ff004222, -20px 0 #ff0042; background: #ff0042; }
 }
 
+/* Scrollbar styling keeps the chrome aligned with the minimalist palette */
+:root {
+  --scrollbar-track: color-mix(in srgb, var(--surface) 75%, #000 25%);
+  --scrollbar-thumb: color-mix(in srgb, var(--accent) 70%, #000 30%);
+  --scrollbar-thumb-hover: color-mix(in srgb, var(--accent) 85%, #111 15%);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 999px;
+  border: 1px solid rgba(12, 12, 18, 0.65);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+

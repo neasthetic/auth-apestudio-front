@@ -252,7 +252,7 @@ export default function LicensesPage() {
                   </div>
                   <div>
                     <h1 className="text-xl font-semibold tracking-tight md:text-2xl">Licenças</h1>
-                    <p className="text-sm text-[var(--muted)]">Abaixo, você pode ver a lista de todas as suas licenças.</p>
+                    <p className="text-sm text-[var(--muted)]">Abaixo, você pode ver a lista de todas as licenças Ape Studio.</p>
                   </div>
                 </div>
               </div>

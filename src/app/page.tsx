@@ -115,8 +115,8 @@ export default function Home() {
                     <Image src={user.avatar} alt={user.username} fill className="object-cover" unoptimized />
                   </div>
                   <div>
-                    <h1 className="text-xl font-semibold tracking-tight md:text-2xl">Painel</h1>
-                    <p className="text-sm text-[var(--muted)]">Olá, {user.username}</p>
+                    <h1 className="text-xl font-semibold tracking-tight md:text-2xl">Home</h1>
+                    <p className="text-sm text-[var(--muted)]">Bom te ver novamente, {user.username}</p>
                   </div>
                 </div>
               </div>

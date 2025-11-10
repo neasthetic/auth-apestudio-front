@@ -76,7 +76,7 @@ export default function ScriptsPage() {
                   </div>
                   <div>
                     <h1 className="text-xl font-semibold tracking-tight md:text-2xl">Scripts</h1>
-                    <p className="text-sm text-[var(--muted)]">Gerencie seus scripts</p>
+                    <p className="text-sm text-[var(--muted)]">Gerencie os scripts da Ape Studio.</p>
                   </div>
                 </div>
               </div>

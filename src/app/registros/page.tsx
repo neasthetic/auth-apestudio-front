@@ -124,7 +124,7 @@ export default function RegistrosPage() {
                   </div>
                   <div>
                     <h1 className="text-xl font-semibold tracking-tight md:text-2xl">Registros</h1>
-                    <p className="text-sm text-[var(--muted)]">Auditoria das ações sobre licenças</p>
+                    <p className="text-sm text-[var(--muted)]">Auditoria das ações sobre licenças da Ape Studio</p>
                   </div>
                 </div>
 
